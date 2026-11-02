@@ -4,35 +4,48 @@ import { useEffect, useState } from "react";
 import { useConsent } from "@/components/tracking/consent-store";
 
 /**
- * Mobile bottom bar with the main CTA. Appears once the hero CTA has
- * scrolled away; hidden while the cookie banner needs an answer and while
- * the application section itself is on screen.
+ * Mobile bottom bar with the main CTA, on screen for the whole page except:
+ * - while the hero's own CTA is visible (no second button on the first screen),
+ * - from just before the application section scrolls in until it has left,
+ *   so the bar never covers the form,
+ * - while a form field has focus (on-screen keyboard),
+ * - while the cookie bar, which uses the same spot, waits for an answer.
  */
 export function StickyCta({ label, href = "#basvuru" }: { label: string; href?: string }) {
   const { choice } = useConsent();
-  const [pastHero, setPastHero] = useState(false);
-  const [atForm, setAtForm] = useState(false);
+  const [heroCtaVisible, setHeroCtaVisible] = useState(true);
+  const [nearForm, setNearForm] = useState(false);
+  const [typing, setTyping] = useState(false);
 
   useEffect(() => {
-    const hero = document.querySelector("[data-hero-cta]");
+    const heroCta = document.querySelector("[data-hero-cta]");
     const form = document.getElementById("basvuru");
     const observers: IntersectionObserver[] = [];
-    if (hero) {
-      const o = new IntersectionObserver(([e]) =>
-        setPastHero(!e.isIntersecting && e.boundingClientRect.top < 0),
-      );
-      o.observe(hero);
+    if (heroCta) {
+      const o = new IntersectionObserver(([e]) => setHeroCtaVisible(e.isIntersecting));
+      o.observe(heroCta);
       observers.push(o);
     }
     if (form) {
-      const o = new IntersectionObserver(([e]) => setAtForm(e.isIntersecting), { rootMargin: "0px 0px -20% 0px" });
+      // The root reaches 25% below the screen: the bar slides away before the section's top edge shows.
+      const o = new IntersectionObserver(([e]) => setNearForm(e.isIntersecting), { rootMargin: "0px 0px 25% 0px" });
       o.observe(form);
       observers.push(o);
     }
-    return () => observers.forEach((o) => o.disconnect());
+    const isField = (el: EventTarget | null) =>
+      el instanceof HTMLElement && el.matches("input:not([type=checkbox]):not([type=radio]), textarea, select");
+    const onFocusIn = (e: FocusEvent) => setTyping(isField(e.target));
+    const onFocusOut = (e: FocusEvent) => setTyping(isField(e.relatedTarget));
+    document.addEventListener("focusin", onFocusIn);
+    document.addEventListener("focusout", onFocusOut);
+    return () => {
+      observers.forEach((o) => o.disconnect());
+      document.removeEventListener("focusin", onFocusIn);
+      document.removeEventListener("focusout", onFocusOut);
+    };
   }, []);
 
-  const show = pastHero && !atForm && choice !== "pending" && choice !== "unknown";
+  const show = !heroCtaVisible && !nearForm && !typing && choice !== "pending" && choice !== "unknown";
 
   return (
     <div

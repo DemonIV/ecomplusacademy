@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { qualify, scoreAnswers } from "@/lib/qualification";
-import { QUESTIONS, type Answers } from "@/config/qualification";
+import { QUESTIONS, answerLabel, type Answers } from "@/config/qualification";
 
-const strong: Answers = { stage: "selling", budget: "50_100", readiness: "yes", hours: "10_20" };
+const strong: Answers = { stage: "selling", budget: "50_100", readiness: "now", hours: "10_20" };
 
 describe("qualification", () => {
   it("every configured option has a score", () => {
@@ -26,9 +26,12 @@ describe("qualification", () => {
     expect(qualify({ ...strong, budget: "25_50" }).qualified).toBe(true);
   });
 
-  it("disqualifies applicants who cannot start", () => {
-    expect(qualify({ ...strong, readiness: "no" })).toMatchObject({ qualified: false, reason: "readiness" });
-    expect(qualify({ ...strong, readiness: "installments" }).qualified).toBe(true);
+  it("start time only ranks: wanting information first still gets a call, scored lower", () => {
+    const now = qualify(strong);
+    const later = qualify({ ...strong, readiness: "info_first" });
+    expect(later.qualified).toBe(true);
+    expect(qualify({ ...strong, readiness: "this_month" }).qualified).toBe(true);
+    expect(later.score).toBeLessThan(now.score);
   });
 
   it("a re-apply lock wins over good answers", () => {
@@ -36,7 +39,13 @@ describe("qualification", () => {
   });
 
   it("weaker qualified applicants land in lower tiers", () => {
-    const weak = qualify({ stage: "none", budget: "25_50", readiness: "installments", hours: "lt5" });
+    const weak = qualify({ stage: "none", budget: "25_50", readiness: "this_month", hours: "lt5" });
     expect(weak).toMatchObject({ qualified: true, tier: "C" });
+  });
+
+  it("labels answers to the retired 48-hour question for older leads", () => {
+    expect(answerLabel("readiness", "yes")).toContain("eski soru");
+    expect(answerLabel("readiness", "now")).toBe("Hemen");
+    expect(answerLabel("readiness", "unknown-id")).toBe("unknown-id");
   });
 });

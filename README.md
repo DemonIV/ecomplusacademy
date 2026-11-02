@@ -3,7 +3,7 @@
 Here is the flow. A visitor arrives from a Meta ad, answers the qualification questions and leaves their contact details.
 
 - **Qualified applicants** pick a time straight away in the Calendly calendar embedded on the page. The call is a WhatsApp call at the chosen time.
-- **Applicants filtered out** are sent to free content and the community.
+- **Applicants filtered out** are sent to free content: the "İlk 30 Gün Planı" PDF (once it exists) and Instagram.
 
 After the call, the team marks the outcome in the panel. A sale goes to Meta as a Purchase through the Conversions API.
 
@@ -33,15 +33,18 @@ Checks:
 
 | File | Contents |
 |---|---|
-| `content/brand.ts` | Brand name, company legal name, contact details, social media |
-| `content/copy.ts` | All page copy, FAQ |
-| `content/media.ts` | VSL, student videos, images |
+| `content/brand.ts` | Brand name, founder, company legal name, contact details, Instagram |
+| `content/copy.ts` | All page copy: hero, promises, Onur's story and timeline, FAQ |
+| `content/media.ts` | Intro video (Vercel Blob URLs, upload steps in the file) and founder photos |
+| `config/site.ts` | **Monthly**: cohort month and seat count; the /sonuc resources |
 | `content/legal.ts` | KVKK / privacy texts (must come from a lawyer) |
 | `content/whatsapp.ts` | Ready-made WhatsApp messages the team sends from the panel |
 | `config/qualification.ts` | Qualification questions, budget threshold, scoring |
 | `config/booking.ts` | Calendly event link and embed colours |
 
-Placeholder values are marked `sample: true`. `npm run prelaunch` will not pass while any of them remain.
+Placeholder values are marked `sample: true`. `npm run prelaunch` will not pass while any of them remain. The page itself never shows a "sample" badge.
+
+Videos are not in the repo: they live in the Vercel Blob store `ecomplusacademy-media` (public, fra1). On Hobby, Blob includes 10 GB of transfer a month and stops serving for 30 days when that runs out, so move to Pro before running ads.
 
 ## Calendly setup
 

@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
@@ -12,9 +13,10 @@ import {
 } from "react";
 import { CalendlyEmbed, type ScheduledPayload } from "@/components/booking/calendly-embed";
 import type { StoredBooking } from "@/components/thanks/booking-summary";
-import { QUESTIONS, type Answers, type QuestionId } from "@/config/qualification";
+import { QUESTIONS, isValidAnswer, type Answers, type QuestionId } from "@/config/qualification";
 import { COPY } from "@/content/copy";
 import { BRAND } from "@/content/brand";
+import { MEDIA } from "@/content/media";
 import { toE164 } from "@/lib/calendly/link";
 import { readSession, removeSession, STORAGE_KEYS, writeSession } from "@/lib/client/storage";
 import { setUserData, trackEvent } from "@/lib/meta/fbq";
@@ -63,6 +65,21 @@ type FieldError = Partial<Record<keyof Contact | "kvkk" | "form", string>>;
 
 const noopSubscribe = () => () => {};
 
+/**
+ * A tab can hold answers to an earlier version of the questions (e.g. the
+ * retired 48-hour question). Before the application is sent, drop those and
+ * go back to the first question that needs a fresh answer.
+ */
+function withCurrentQuestions(saved: Saved | null): Saved | null {
+  if (!saved || saved.qualified || saved.notice) return saved;
+  const stale = QUESTIONS.findIndex((q) => saved.answers[q.id] !== undefined && !isValidAnswer(q.id, saved.answers[q.id]));
+  if (stale === -1) return saved;
+  const answers = Object.fromEntries(
+    QUESTIONS.filter((q) => isValidAnswer(q.id, saved.answers[q.id])).map((q) => [q.id, saved.answers[q.id]]),
+  ) as Partial<Answers>;
+  return { ...saved, answers, step: Math.min(saved.step, stale) };
+}
+
 function splitName(fullName: string) {
   const parts = fullName.trim().split(/\s+/);
   return { first: parts.slice(0, -1).join(" ") || parts[0], last: parts.length > 1 ? parts[parts.length - 1] : undefined };
@@ -71,7 +88,10 @@ function splitName(fullName: string) {
 export function ApplyFlow() {
   const router = useRouter();
   const hydrated = useSyncExternalStore(noopSubscribe, () => true, () => false);
-  const restored = useMemo(() => (hydrated ? readSession<Saved>(STORAGE_KEYS.apply) : null), [hydrated]);
+  const restored = useMemo(
+    () => (hydrated ? withCurrentQuestions(readSession<Saved>(STORAGE_KEYS.apply)) : null),
+    [hydrated],
+  );
   const [saved, setSaved] = useState<Saved | null>(null);
   const state = saved ?? restored ?? INITIAL;
 
@@ -332,6 +352,18 @@ export function ApplyFlow() {
               );
             })}
           </div>
+          {question.note && (
+            <p className="mt-4 flex items-start gap-3 rounded-[var(--radius-control)] border border-line bg-night/40 px-4 py-3 text-[0.92rem] leading-relaxed text-muted">
+              <Image
+                src={MEDIA.founder.avatar.src}
+                alt={MEDIA.founder.avatar.alt}
+                width={28}
+                height={28}
+                className="mt-0.5 size-7 flex-none rounded-full object-cover"
+              />
+              <span>{question.note}</span>
+            </p>
+          )}
           {step > 0 && (
             <button type="button" className="mt-6 text-sm font-semibold text-muted underline-offset-4 hover:text-paper hover:underline" onClick={back}>
               {T.back}

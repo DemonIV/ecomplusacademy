@@ -71,14 +71,14 @@ if (stock.length) {
   blockers.push({
     title: "Geçici stok medya kullanılıyor",
     details: stock.map(({ file, lines }) => `${relative(root, file)}: satır ${lineList(lines)}`),
-    fix: "Gerçek VSL, öğrenci videoları (yazılı izinle) ve görselleri content/media.ts'e gir.",
+    fix: "Gerçek video ve görselleri content/media.ts'e gir (videolar Vercel Blob'da; nasıl yükleneceği dosyanın başında).",
   });
 } else {
   passed.push("Stok medya bağlantısı yok");
 }
 
 const PLACEHOLDERS =
-  /markaniz|ornek-topluluk|ornek-hesap|905000000000|0000000000000000|Kurucu Adı|Şirket Ünvanı|Öğrenci Adı/;
+  /markaniz|ornek-hesap|905000000000|0000000000000000|Kurucu Adı|Şirket Ünvanı|Öğrenci Adı|\[İş türü\]|\[…\]/;
 const placeholders = contentFiles
   .map((file) => ({ file, lines: matches(file, PLACEHOLDERS) }))
   .filter((entry) => entry.lines.length);

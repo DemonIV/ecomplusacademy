@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import { Footer } from "@/components/sections/footer";
 import { Header } from "@/components/sections/header";
 import { BookingSummary } from "@/components/thanks/booking-summary";
 import { BRAND } from "@/content/brand";
 import { COPY } from "@/content/copy";
-import { MEDIA, type VideoSource } from "@/content/media";
+import { MEDIA } from "@/content/media";
+import { COHORT } from "@/config/site";
 import { whatsappLink } from "@/lib/phone";
 
 export const metadata: Metadata = {
@@ -13,9 +15,8 @@ export const metadata: Metadata = {
 };
 
 export default function ThanksPage() {
-  const { thanks } = COPY;
-  // Widened on purpose: the slot may hold a YouTube video once the real one exists.
-  const video = MEDIA.preCall as VideoSource;
+  const { thanks, coach } = COPY;
+  const video = MEDIA.preCall;
   return (
     <>
       <Header cta={false} />
@@ -29,6 +30,7 @@ export default function ThanksPage() {
               <h2 className="t-h3">{thanks.videoTitle}</h2>
               <div className="relative mt-5 overflow-hidden rounded-[var(--radius-card)] border border-line-strong bg-deep">
                 {video.kind === "file" ? (
+                  // The 720p file: plenty for this column, and half the data of the 1080p one.
                   <video
                     className="aspect-video w-full object-cover"
                     controls
@@ -36,7 +38,7 @@ export default function ThanksPage() {
                     preload="none"
                     poster={video.poster}
                   >
-                    <source src={video.desktop} type="video/mp4" />
+                    <source src={video.mobile} type="video/mp4" />
                   </video>
                 ) : (
                   <iframe
@@ -48,11 +50,26 @@ export default function ThanksPage() {
                     loading="lazy"
                   />
                 )}
-                {video.sample && <span className="sample-badge absolute left-3 top-3">Örnek video</span>}
               </div>
             </div>
             <div>
-              <h2 className="t-h3">{thanks.prepTitle}</h2>
+              <figure className="flex items-center gap-4 rounded-[var(--radius-card)] border border-line-strong bg-panel/60 p-5">
+                <Image
+                  src={MEDIA.founder.avatar.src}
+                  alt=""
+                  width={56}
+                  height={56}
+                  className="size-14 flex-none rounded-2xl border border-line-strong object-cover"
+                />
+                <div>
+                  <p className="font-display text-[1.1rem] font-medium leading-snug">{coach.title(COHORT.month)}</p>
+                  <figcaption className="mt-1 text-sm text-muted">
+                    {BRAND.founder.name} · {BRAND.founder.title}
+                  </figcaption>
+                </div>
+              </figure>
+
+              <h2 className="t-h3 mt-10">{thanks.prepTitle}</h2>
               <ol className="mt-5 space-y-4">
                 {thanks.prep.map((item, i) => (
                   <li key={item} className="flex gap-4">

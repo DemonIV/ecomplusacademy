@@ -5,7 +5,7 @@ import { BOOKING } from "@/config/booking";
 import { BRAND } from "@/content/brand";
 import { COPY } from "@/content/copy";
 import { readSession, STORAGE_KEYS } from "@/lib/client/storage";
-import { formatPhone } from "@/lib/phone";
+import { formatPhone, whatsappLink } from "@/lib/phone";
 
 /** What the application flow leaves for this page after Calendly confirmed a booking. */
 export type StoredBooking = {
@@ -44,6 +44,7 @@ export function BookingSummary() {
       <div>
         <h1 className="t-display max-w-[16ch]">{T.title(null)}</h1>
         <p className="t-lead measure mt-6">{T.fallbackLead}</p>
+        <ConfirmButton when={null} />
       </div>
     );
   }
@@ -53,6 +54,8 @@ export function BookingSummary() {
   const start = booking ? new Date(booking.start) : null;
   const trTime = start ? fmt(start, BOOKING.timeZone, { hour: "2-digit", minute: "2-digit" }) : null;
   const localTime = start ? fmt(start, zone, { hour: "2-digit", minute: "2-digit" }) : null;
+  // The team reads the confirmation in Türkiye time: "5 Kasım Çarşamba 14:30".
+  const when = start ? `${fmt(start, BOOKING.timeZone, { day: "numeric", month: "long", weekday: "long" })} ${trTime}` : null;
 
   return (
     <div>
@@ -76,21 +79,35 @@ export function BookingSummary() {
           {T.callNote(phone, Boolean(start))}
           {booking?.hostName ? ` ${T.host(booking.hostName)}` : ""}
         </p>
-        {(booking?.rescheduleUrl || booking?.cancelUrl) && (
-          <div className="mt-6 flex flex-wrap gap-3">
-            {booking.rescheduleUrl && (
-              <a className="btn btn-ghost btn-sm" href={booking.rescheduleUrl} target="_blank" rel="noopener noreferrer">
-                {T.reschedule}
-              </a>
-            )}
-            {booking.cancelUrl && (
-              <a className="btn btn-ghost btn-sm" href={booking.cancelUrl} target="_blank" rel="noopener noreferrer">
-                {T.cancel}
-              </a>
-            )}
-          </div>
-        )}
+        <p className="mt-1 text-sm text-faint">{T.channelNote}</p>
+        <div className="mt-6 flex flex-wrap gap-3">
+          <ConfirmButton when={when} inline />
+          {booking?.rescheduleUrl && (
+            <a className="btn btn-ghost btn-sm" href={booking.rescheduleUrl} target="_blank" rel="noopener noreferrer">
+              {T.reschedule}
+            </a>
+          )}
+          {booking?.cancelUrl && (
+            <a className="btn btn-ghost btn-sm" href={booking.cancelUrl} target="_blank" rel="noopener noreferrer">
+              {T.cancel}
+            </a>
+          )}
+        </div>
       </div>
     </div>
+  );
+}
+
+/** A confirmation message the lead sends us: people who confirm show up. */
+function ConfirmButton({ when, inline = false }: { when: string | null; inline?: boolean }) {
+  return (
+    <a
+      className={`btn btn-gold ${inline ? "btn-sm" : "mt-8"}`}
+      href={whatsappLink(BRAND.contact.whatsapp, T.confirmText(when))}
+      target="_blank"
+      rel="noopener"
+    >
+      {T.confirm}
+    </a>
   );
 }

@@ -45,7 +45,7 @@ const CANCEL_LABELS: Record<string, string> = {
 
 const REASON_LABELS: Record<string, string> = {
   budget: "Bütçe eşiğin altında",
-  readiness: "48 saat içinde başlayamıyor",
+  readiness: "Şu an başlamaya hazır değil",
   reapply_lock: "30 gün içinde tekrar başvuru",
 };
 

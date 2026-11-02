@@ -5,13 +5,16 @@
  */
 
 export const BRAND = {
+  /** Company name, address, MERSİS, e-mail, WhatsApp and Instagram are still placeholders. */
   sample: true,
   name: "Ecom Plus Academy",
   legalName: "Şirket Ünvanı Ltd. Şti.",
   tagline: "E-ticaret & dropshipping mentorluk programı",
   founder: {
-    name: "Kurucu Adı Soyadı",
-    title: "Kurucu & baş mentor",
+    name: "Onur Yeşil",
+    title: "Kurucu & Baş Mentör",
+    /** Hero line under the call to action. */
+    proof: "500 bin lira borçtan ₺50M+ satışa · 5 yıl",
   },
   contact: {
     email: "destek@markaniz.com",
@@ -21,9 +24,6 @@ export const BRAND = {
   },
   social: {
     instagram: "https://instagram.com/markaniz",
-    youtube: "https://youtube.com/@markaniz",
-    telegram: "https://t.me/markaniz",
-    whatsappCommunity: "https://chat.whatsapp.com/ornek-topluluk",
   },
   /** Call wording used on the thank-you page, in WhatsApp messages and Meta events. */
   callName: "Ücretsiz Strateji Görüşmesi",

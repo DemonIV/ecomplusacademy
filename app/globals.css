@@ -219,6 +219,13 @@
     font-size: 0.9375rem;
     border-radius: 12px;
   }
+  /* Cookie bar: keeps the bar to one row on phones. */
+  .btn-xs {
+    min-height: 38px;
+    padding: 0.45rem 0.8rem;
+    font-size: 0.875rem;
+    border-radius: 10px;
+  }
 
   .field {
     width: 100%;
@@ -285,20 +292,6 @@
     border: 1px solid var(--line);
     border-radius: var(--radius-panel);
   }
-  .sample-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.35rem;
-    padding: 0.2rem 0.55rem;
-    border-radius: 999px;
-    background: rgb(201 154 98 / 0.16);
-    color: var(--kraft);
-    border: 1px dashed rgb(201 154 98 / 0.55);
-    font-size: 0.72rem;
-    font-weight: 700;
-    letter-spacing: 0.02em;
-    white-space: nowrap;
-  }
 
   /* Quiet backdrop: a champagne glow under the hero and a cool silver one opposite. */
   .ambient {
@@ -327,49 +320,7 @@
       0 0 0 1px var(--line-strong);
   }
 
-  /* ── Coverflow (testimonials) ───────────────────────────────────────────── */
-  .coverflow {
-    perspective: 1200px;
-    touch-action: pan-y;
-  }
-  .coverflow-card {
-    --offset: 0;
-    --abs: 0;
-    position: absolute;
-    left: 50%;
-    top: 0;
-    transform: translateX(-50%) translateX(calc(var(--offset) * min(58%, 300px)))
-      translateZ(calc(var(--abs) * -170px)) rotateY(calc(var(--offset) * -32deg));
-    transition:
-      transform 620ms cubic-bezier(0.22, 0.8, 0.2, 1),
-      opacity 620ms ease,
-      filter 620ms ease;
-    opacity: calc(1 - var(--abs) * 0.28);
-    filter: brightness(calc(1 - var(--abs) * 0.22));
-  }
-
-  /* ── Curved gallery (results) ───────────────────────────────────────────── */
-  /* Not "ring*": Tailwind's ring utility would draw a 1px outline on the cylinder. */
-  .cyl-stage {
-    perspective: 1600px;
-    touch-action: pan-y;
-  }
-  .cyl {
-    transform-style: preserve-3d;
-    will-change: transform;
-  }
-  .cyl-item {
-    position: absolute;
-    inset: 0;
-    margin: auto;
-    backface-visibility: hidden;
-    -webkit-backface-visibility: hidden;
-  }
-
   /* ── Misc ───────────────────────────────────────────────────────────────── */
-  .marquee-mask {
-    mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
-  }
   .hairline {
     height: 1px;
     background: var(--line);
@@ -379,20 +330,6 @@
   }
   .scrollbar-none::-webkit-scrollbar {
     display: none;
-  }
-
-  /* The single orchestrated load moment: hero copy, then CTA, then cards. */
-  .hero-in > * {
-    animation: rise-in 720ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
-  }
-  .hero-in > *:nth-child(2) {
-    animation-delay: 90ms;
-  }
-  .hero-in > *:nth-child(3) {
-    animation-delay: 180ms;
-  }
-  .hero-in > *:nth-child(4) {
-    animation-delay: 270ms;
   }
 }
 

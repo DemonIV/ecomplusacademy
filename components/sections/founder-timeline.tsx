@@ -1,13 +1,14 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useRef, useState, type ReactNode } from "react";
+import { useRef, useState } from "react";
 import { Scene3D } from "@/components/three/scene-3d";
 import { useScrollProgress } from "@/lib/client/use-scroll-progress";
 
 const FounderCanvas = dynamic(() => import("@/components/three/founder/founder-canvas"), { ssr: false });
 
-type Milestone = { year: string; title: string; text: string };
+/** An empty `year` is simply not shown. */
+type Milestone = { readonly year: string; readonly title: string; readonly text: string };
 
 /** Static stand-in: the same climbing road, drawn as far as the reader has scrolled. */
 function RoadFallback({ count }: { count: number }) {
@@ -50,7 +51,7 @@ function RoadFallback({ count }: { count: number }) {
  * The milestone list drives a scroll-linked 3D road (sticky beside the list
  * on desktop, pinned above it on phones).
  */
-export function FounderTimeline({ milestones, intro }: { milestones: Milestone[]; intro: ReactNode }) {
+export function FounderTimeline({ milestones }: { milestones: readonly Milestone[] }) {
   const list = useRef<HTMLOListElement>(null);
   const root = useRef<HTMLDivElement>(null);
   const progress = useRef(0);
@@ -75,10 +76,8 @@ export function FounderTimeline({ milestones, intro }: { milestones: Milestone[]
   );
 
   return (
-    <div ref={root} className="grid lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:gap-x-16">
-      <div className="lg:col-start-2">{intro}</div>
-
-      <div className="sticky top-[var(--header-h)] z-10 -mx-[var(--gutter)] mt-12 h-[230px] self-start bg-night/90 backdrop-blur-sm lg:top-[calc(var(--header-h)+1.5rem)] lg:col-start-1 lg:row-span-2 lg:row-start-1 lg:mx-0 lg:mt-0 lg:h-[calc(100svh-var(--header-h)-3rem)] lg:bg-transparent lg:backdrop-blur-none">
+    <div ref={root} className="mt-14 grid lg:mt-20 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:gap-x-16">
+      <div className="sticky top-[var(--header-h)] z-10 -mx-[var(--gutter)] h-[230px] self-start bg-night/90 backdrop-blur-sm lg:top-[calc(var(--header-h)+1.5rem)] lg:col-start-1 lg:row-start-1 lg:mx-0 lg:h-[calc(100svh-var(--header-h)-3rem)] lg:bg-transparent lg:backdrop-blur-none">
         {/* Soft edges: the camera follows the head, so the road always runs out of frame. */}
         <Scene3D
           fallback={<RoadFallback count={count} />}
@@ -89,18 +88,20 @@ export function FounderTimeline({ milestones, intro }: { milestones: Milestone[]
         <div className="pointer-events-none absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-night to-transparent lg:hidden" />
       </div>
 
-      <ol ref={list} className="relative mt-6 lg:col-start-2 lg:mt-16">
+      <ol ref={list} className="relative mt-6 lg:col-start-2 lg:row-start-1 lg:mt-16">
         {milestones.map((m, i) => (
           <li
-            key={m.year}
+            key={i}
             data-active={i <= activeIndex ? "true" : undefined}
             className="group relative border-l border-line py-7 pl-7 transition-colors duration-500 data-[active]:border-gold/60"
           >
             <span className="absolute -left-[5px] top-9 size-[9px] rounded-full bg-line-strong transition-colors duration-500 group-data-[active]:bg-gold" />
-            <p className="t-num text-[0.95rem] text-faint transition-colors duration-500 group-data-[active]:text-gold">
-              {m.year}
-            </p>
-            <h3 className="t-h3 mt-2">{m.title}</h3>
+            {m.year && (
+              <p className="t-num mb-2 text-[0.95rem] text-faint transition-colors duration-500 group-data-[active]:text-gold">
+                {m.year}
+              </p>
+            )}
+            <h3 className="t-h3">{m.title}</h3>
             <p className="mt-2 max-w-[34rem] text-muted">{m.text}</p>
           </li>
         ))}

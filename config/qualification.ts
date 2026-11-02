@@ -15,7 +15,10 @@ export type QuestionOption = {
 export type Question = {
   id: QuestionId;
   title: string;
+  /** Under the title. */
   helper?: string;
+  /** Under the options. */
+  note?: string;
   options: QuestionOption[];
 };
 
@@ -34,7 +37,8 @@ export const QUESTIONS: Question[] = [
   {
     id: "budget",
     title: "Önümüzdeki 3 ay için ayırabileceğin toplam bütçe ne kadar?",
-    helper: "Reklam, ürün testi ve eğitim dahil. Gerçekçi bir plan çıkarmak için soruyoruz.",
+    helper: "Reklam, ürün testi ve eğitim dahil.",
+    note: "Borçla başlayanlar da var; ben öyle başladım. Görüşmede gerçekçi bir plan çıkarıyoruz.",
     options: [
       { id: "lt10", label: "₺10.000'den az" },
       { id: "10_25", label: "₺10.000 – ₺25.000" },
@@ -45,11 +49,11 @@ export const QUESTIONS: Question[] = [
   },
   {
     id: "readiness",
-    title: "Sana uygun bir plan sunarsak 48 saat içinde başlayabilir misin?",
+    title: "Uygun olursa ne zaman başlamak istersin?",
     options: [
-      { id: "yes", label: "Evet, hazırım" },
-      { id: "installments", label: "Evet, taksit seçeneği olursa" },
-      { id: "no", label: "Hayır, şu an başlayamam" },
+      { id: "now", label: "Hemen" },
+      { id: "this_month", label: "Bu ay" },
+      { id: "info_first", label: "Önce bilgi almak istiyorum" },
     ],
   },
   {
@@ -71,7 +75,20 @@ export function isValidAnswer(questionId: QuestionId, optionId: unknown): option
   return Boolean(question?.options.some((o) => o.id === optionId));
 }
 
+/** Answers to earlier versions of a question, so older leads still read well in the panel. */
+const RETIRED_LABELS: Partial<Record<QuestionId, Record<string, string>>> = {
+  readiness: {
+    yes: "48 saatte başlayabilir (eski soru)",
+    installments: "Taksitle başlayabilir (eski soru)",
+    no: "Şu an başlayamaz (eski soru)",
+  },
+};
+
 export function answerLabel(questionId: string, optionId: string): string {
   const question = QUESTIONS.find((q) => q.id === questionId);
-  return question?.options.find((o) => o.id === optionId)?.label ?? optionId;
+  return (
+    question?.options.find((o) => o.id === optionId)?.label ??
+    RETIRED_LABELS[questionId as QuestionId]?.[optionId] ??
+    optionId
+  );
 }

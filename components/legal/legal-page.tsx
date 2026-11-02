@@ -9,10 +9,7 @@ export function LegalPage({ doc }: { doc: LegalDoc }) {
       <main className="pt-[calc(var(--header-h)+3rem)]">
         <article className="shell max-w-[52rem] pb-[var(--section-space)]">
           <h1 className="t-h2">{doc.title}</h1>
-          <p className="mt-4 flex flex-wrap items-center gap-3 text-sm text-faint">
-            {doc.updated}
-            {doc.sample && <span className="sample-badge">Taslak metin</span>}
-          </p>
+          <p className="mt-4 text-sm text-faint">{doc.updated}</p>
           <p className="t-lead mt-8">{doc.intro}</p>
           {doc.sections.map((section) => (
             <section key={section.heading} className="mt-12">

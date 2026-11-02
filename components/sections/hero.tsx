@@ -1,6 +1,9 @@
+import Image from "next/image";
 import { HeroGlobe } from "@/components/three/globe/hero-globe";
 import { GlobeFallback } from "@/components/three/globe/globe-fallback";
+import { LineIcon } from "@/components/ui/line-icon";
 import { VslPlayer } from "@/components/video/vsl-player";
+import { BRAND } from "@/content/brand";
 import { COPY } from "@/content/copy";
 import { MEDIA } from "@/content/media";
 import { SITE } from "@/config/site";
@@ -11,7 +14,7 @@ const CARD_POSITIONS = [
   "hidden lg:flex lg:left-[6%] lg:top-[72%]",
 ];
 
-/** Keeps hyphenated words ("e-ticaret") on one line in the display headline. */
+/** Keeps hyphenated words ("E-ticaretle") on one line in the display headline. */
 function keepHyphenated(text: string) {
   return text.split(/(\S+-\S+)/).map((part, i) =>
     i % 2 ? (
@@ -35,11 +38,13 @@ function ParcelGlyph() {
 
 export function Hero() {
   const { hero, vsl } = COPY;
+  const last = hero.title.length - 1;
   return (
-    <section className="relative overflow-hidden pt-[calc(var(--header-h)+2.25rem)] lg:pt-[calc(var(--header-h)+3.5rem)]">
+    <section className="relative overflow-hidden pt-[calc(var(--header-h)+2rem)] lg:pt-[calc(var(--header-h)+3.5rem)]">
       <div className="ambient" />
       <div className="shell relative grid items-center gap-y-2 lg:grid-cols-[minmax(0,1.02fr)_minmax(0,1fr)] lg:gap-x-10">
-        <div className="hero-in relative z-10 max-w-[38rem] pt-2 lg:pb-16">
+        {/* The copy paints at once, with no entrance animation; only the globe and its cards move. */}
+        <div className="relative z-10 max-w-[38rem] pt-2 lg:pb-16">
           <p className="mb-6 inline-flex items-center gap-2.5 rounded-full border border-line-strong bg-panel/60 px-3.5 py-1.5 text-sm font-semibold text-silver">
             <span className="relative flex size-2">
               <span className="absolute inline-flex size-full rounded-full bg-gold [animation:ping-soft_2.4s_ease-out_infinite]" />
@@ -47,14 +52,41 @@ export function Hero() {
             </span>
             {SITE.cohortLabel}
           </p>
-          <h1 className="t-display">{keepHyphenated(hero.title)}</h1>
+          {/* On short laptop screens the headline also shrinks with the height, so the CTA stays on the first screen. */}
+          <h1 className="t-display text-[clamp(2rem,1.15rem+2.9vw,3.75rem)] lg:text-[length:min(3.75rem,4.2vw,7svh)]">
+            {hero.title.map((sentence, i) => (
+              <span key={sentence} className={`block ${i === last ? "text-gold" : ""}`}>
+                {keepHyphenated(sentence)}
+              </span>
+            ))}
+          </h1>
           <p className="t-lead measure mt-6">{hero.lead}</p>
-          <div className="mt-8 flex flex-wrap items-center gap-x-5 gap-y-3">
-            <a href="#basvuru" className="btn btn-gold" data-hero-cta>
-              {hero.cta}
-            </a>
-            <span className="text-[0.95rem] text-muted">{hero.ctaNote}</span>
-          </div>
+          <a href="#basvuru" className="btn btn-gold mt-8 w-full sm:w-auto" data-hero-cta>
+            {hero.cta}
+          </a>
+          <ul className="mt-5 flex flex-wrap gap-x-5 gap-y-2.5 text-[0.95rem] font-semibold">
+            {hero.trust.map((item) => (
+              <li key={item} className="flex items-center gap-2">
+                <span className="grid size-5 flex-none place-items-center rounded-full bg-gold/15 text-gold">
+                  <LineIcon id="check" className="size-3.5" />
+                </span>
+                {item}
+              </li>
+            ))}
+          </ul>
+          <p className="mt-6 flex items-center gap-3 text-[0.95rem] leading-snug text-muted">
+            <Image
+              src={MEDIA.founder.avatar.src}
+              alt=""
+              width={40}
+              height={40}
+              loading="eager"
+              className="size-10 flex-none rounded-full border border-line-strong object-cover"
+            />
+            <span>
+              <span className="font-semibold text-paper">{BRAND.founder.name}</span> · {BRAND.founder.proof}
+            </span>
+          </p>
         </div>
 
         {/* Globe: a cropped horizon on phones, the full sphere beside the copy on desktop. */}
@@ -81,24 +113,14 @@ export function Hero() {
         </div>
       </div>
 
-      <div className="shell relative z-10 -mt-14 pb-[calc(var(--section-space)*0.6)] lg:-mt-6">
+      <div className="shell relative z-10 -mt-14 pb-[calc(var(--section-space)*0.45)] lg:-mt-6">
         <div className="mx-auto max-w-[1000px]">
           <VslPlayer
             source={MEDIA.vsl}
-            title="Tanıtım videosu"
+            title="Onur Yeşil'den tanıtım videosu"
             labels={{ unmute: vsl.unmute, restart: vsl.restart, play: vsl.play, ended: vsl.ended, cta: hero.cta }}
           />
-          <div className="mt-8 grid gap-8 md:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] md:items-start">
-            <p className="t-lead measure">{vsl.caption}</p>
-            <figure className="relative border-l-2 border-gold pl-5">
-              <blockquote className="text-[1.05rem] leading-relaxed text-paper">“{hero.featured.quote}”</blockquote>
-              <figcaption className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-muted">
-                <span className="font-semibold text-paper">{hero.featured.name}</span>
-                <span>{hero.featured.detail}</span>
-                {hero.featured.sample && <span className="sample-badge">Örnek yorum</span>}
-              </figcaption>
-            </figure>
-          </div>
+          <p className="t-lead measure mx-auto mt-7 text-center">{vsl.caption}</p>
         </div>
       </div>
     </section>

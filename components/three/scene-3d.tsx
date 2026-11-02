@@ -42,6 +42,34 @@ export function canRender3D(): boolean {
   return capability;
 }
 
+const START_EVENTS = ["pointerdown", "pointermove", "keydown", "wheel", "touchstart", "scroll"] as const;
+
+/**
+ * True after the visitor's first input, or `delayMs` after the page's load
+ * event, whichever comes first. Keeps three.js (parse + shader compile) out
+ * of the first seconds, when the headline and the CTA must paint and respond.
+ */
+function useStartSignal(enabled: boolean, delayMs: number): boolean {
+  const [started, setStarted] = useState(false);
+  useEffect(() => {
+    if (!enabled || started) return;
+    let timer = 0;
+    const start = () => setStarted(true);
+    const arm = () => {
+      timer = window.setTimeout(start, delayMs);
+    };
+    START_EVENTS.forEach((type) => window.addEventListener(type, start, { once: true, passive: true }));
+    if (document.readyState === "complete") arm();
+    else window.addEventListener("load", arm, { once: true });
+    return () => {
+      window.clearTimeout(timer);
+      window.removeEventListener("load", arm);
+      START_EVENTS.forEach((type) => window.removeEventListener(type, start));
+    };
+  }, [enabled, started, delayMs]);
+  return started;
+}
+
 type SceneState = { active: boolean; ready: () => void; fail: () => void };
 const SceneContext = createContext<SceneState>({ active: false, ready: () => {}, fail: () => {} });
 
@@ -72,15 +100,20 @@ export function Scene3D({
   fallback,
   className = "relative",
   rootMargin = "60% 0px",
+  deferStart = false,
 }: {
   children: ReactNode;
   fallback: ReactNode;
   /** Must position the slot (`relative`, `absolute`…): the layers inside are absolute. */
   className?: string;
   rootMargin?: string;
+  /** Above the fold: wait for the first input or a few seconds after load (see `useStartSignal`). */
+  deferStart?: boolean;
 }) {
   const ref = useRef<HTMLDivElement>(null);
-  const enabled = useSyncExternalStore(noopSubscribe, canRender3D, () => false);
+  const capable = useSyncExternalStore(noopSubscribe, canRender3D, () => false);
+  const started = useStartSignal(capable && deferStart, 3500);
+  const enabled = capable && (!deferStart || started);
   const [near, setNear] = useState(false);
   const [visible, setVisible] = useState(false);
   const [ready, setReady] = useState(false);

@@ -33,11 +33,6 @@ export function Footer() {
                   Instagram
                 </a>
               </li>
-              <li>
-                <a className="hover:text-paper" href={BRAND.social.youtube} rel="noopener" target="_blank">
-                  YouTube
-                </a>
-              </li>
             </ul>
           </div>
           <div>
@@ -56,9 +51,8 @@ export function Footer() {
         <div className="hairline my-10" />
         <p className="max-w-[70ch] text-sm leading-relaxed text-faint">{footer.disclaimer}</p>
         <p className="mt-6 text-sm text-faint">
-          © {SITE.copyrightYear} {BRAND.legalName}. {BRAND.contact.address}. MERSİS: {BRAND.contact.mersis}
+          © {SITE.copyrightYear} {BRAND.legalName} · {BRAND.contact.address} · MERSİS: {BRAND.contact.mersis}
         </p>
-        {BRAND.sample && <span className="sample-badge mt-4">Örnek şirket bilgileri</span>}
       </div>
     </footer>
   );

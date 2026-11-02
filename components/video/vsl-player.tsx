@@ -46,7 +46,6 @@ export function VslPlayer({
             <YouTubeVideo source={source} title={title} labels={labels} ctaHref={ctaHref} />
           )}
         </div>
-        {source.sample && <span className="sample-badge absolute left-3 top-3 z-10">Örnek video</span>}
       </div>
     </div>
   );

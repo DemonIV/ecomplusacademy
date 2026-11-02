@@ -1,29 +1,30 @@
 import { Apply } from "@/components/sections/apply";
-import { Capacity } from "@/components/sections/capacity";
+import { Closing } from "@/components/sections/closing";
+import { Coach } from "@/components/sections/coach";
 import { Faq } from "@/components/sections/faq";
 import { Footer } from "@/components/sections/footer";
-import { Founder } from "@/components/sections/founder";
 import { Header } from "@/components/sections/header";
 import { Hero } from "@/components/sections/hero";
-import { Program } from "@/components/sections/program";
-import { Results } from "@/components/sections/results";
-import { Testimonials } from "@/components/sections/testimonials";
+import { HowItWorks } from "@/components/sections/how-it-works";
+import { Promises } from "@/components/sections/promises";
+import { Story } from "@/components/sections/story";
 import { StickyCta } from "@/components/ui/sticky-cta";
 import { COPY } from "@/content/copy";
 
+/** Order from the client's brief: promise → proof (story) → process → coach & seats → form. */
 export default function Home() {
   return (
     <>
       <Header />
       <main>
         <Hero />
-        <Testimonials />
-        <Founder />
-        <Results />
-        <Program />
-        <Capacity />
+        <Promises />
+        <Story />
+        <HowItWorks />
+        <Coach />
         <Apply />
         <Faq />
+        <Closing />
       </main>
       <Footer />
       <StickyCta label={COPY.stickyCta} />
