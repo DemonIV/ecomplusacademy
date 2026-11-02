@@ -81,6 +81,7 @@ How a booking reaches the panel:
 4. **First admin**:
    - Define `ADMIN_SETUP_TOKEN` and create the account under `/admin/giris`.
    - **Delete** the variable afterwards.
+   - Forgotten password: run `npm run admin:password` in your own terminal (hidden prompt; needs `.vercel/.env.production`).
 5. **`npm run prelaunch`**: clean up every blocker it lists.
 6. **End-to-end test on a real phone**:
    - application → Calendly booking
@@ -88,6 +89,15 @@ How a booking reaches the panel:
    - the booking shows up under `/admin/ajanda` with its time and host
 
 Optional: `RESEND_*` sends each host a daily summary e-mail (outcomes still to be entered, today's calls). Applicants never get e-mail from us.
+
+## Deploys
+
+The Vercel project `ecomplusacademy` is connected to this GitHub repo:
+
+- push to `main` → production (ecomplusacademy.com)
+- any other branch or pull request → its own preview URL
+- environment variables live in Vercel (`vercel env ls`), never in the repo
+- a new migration in `db/migrations/` is not applied by the deploy: run the migrate command above, ideally before pushing the code that needs it
 
 ## Structure
 
