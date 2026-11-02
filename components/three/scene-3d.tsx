@@ -34,8 +34,14 @@ export function canRender3D(): boolean {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return (capability = false);
     if (nav.connection?.saveData) return (capability = false);
     if ((nav.deviceMemory ?? 8) < 3 || (nav.hardwareConcurrency ?? 8) < 4) return (capability = false);
+    // Software-rendered WebGL (no GPU, blocklisted driver, lab tools) runs three.js on the CPU and
+    // stalls the page for seconds: such devices get the static fallback.
     const canvas = document.createElement("canvas");
-    capability = Boolean(canvas.getContext("webgl2") ?? canvas.getContext("webgl"));
+    const attributes: WebGLContextAttributes = { failIfMajorPerformanceCaveat: true };
+    const gl = (canvas.getContext("webgl2", attributes) ?? canvas.getContext("webgl", attributes)) as WebGLRenderingContext | null;
+    capability = Boolean(gl);
+    // Free the probe context right away (browsers cap the number of live WebGL contexts).
+    gl?.getExtension("WEBGL_lose_context")?.loseContext();
   } catch {
     capability = false;
   }
