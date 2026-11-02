@@ -1,0 +1,12 @@
+# Never upload: local secrets, the local dev database, code backups, tooling caches.
+.env*
+!.env.example
+.data
+_arsiv
+.claude
+.next
+node_modules
+coverage
+*.tsbuildinfo
+# Original logo artwork: scripts/brand-assets.mjs reads it locally; the site uses the generated files.
+brand/source

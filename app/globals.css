@@ -1,0 +1,433 @@
+@import "tailwindcss";
+
+/*
+ * Design tokens, taken from the Ecom Plus Academy logo: graphite black,
+ * brushed silver (the E: structure, secondary accents), champagne gold (the
+ * plus: value and every primary action) and kraft cardboard (parcels).
+ * Green appears only as a status colour (`success`).
+ */
+:root {
+  --night: #070708;
+  --deep: #0c0c0e;
+  --panel: #131316;
+  --panel-2: #1b1b1f;
+  --line: rgb(232 226 214 / 0.1);
+  --line-strong: rgb(232 226 214 / 0.2);
+  --paper: #f2efe9;
+  --muted: #b3ada4;
+  --faint: #857f76;
+  --silver: #d6d0cb;
+  --silver-deep: #8f8a85;
+  --gold: #d8b06f;
+  --gold-deep: #a9823f;
+  --kraft: #c99a62;
+  --success: #5cc99d;
+  --danger: #ff8a7a;
+
+  --radius-chip: 10px;
+  --radius-control: 14px;
+  --radius-card: 22px;
+  --radius-panel: 30px;
+
+  --gutter: clamp(1rem, 0.6rem + 2vw, 2.5rem);
+  --section-space: clamp(5.5rem, 4rem + 7vw, 10rem);
+  --header-h: 68px;
+
+  color-scheme: dark;
+}
+
+@theme inline {
+  --color-night: var(--night);
+  --color-deep: var(--deep);
+  --color-panel: var(--panel);
+  --color-panel-2: var(--panel-2);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-paper: var(--paper);
+  --color-muted: var(--muted);
+  --color-faint: var(--faint);
+  --color-silver: var(--silver);
+  --color-silver-deep: var(--silver-deep);
+  --color-gold: var(--gold);
+  --color-gold-deep: var(--gold-deep);
+  --color-kraft: var(--kraft);
+  --color-success: var(--success);
+  --color-danger: var(--danger);
+  --font-display: var(--font-unbounded), "Arial Black", sans-serif;
+  --font-sans: var(--font-manrope), system-ui, sans-serif;
+}
+
+/*
+ * Element defaults and component classes live in Tailwind's cascade layers,
+ * so a utility on the same element always wins (e.g. `shell max-w-[52rem]`).
+ */
+@layer base {
+  html {
+    background: var(--night);
+    -webkit-text-size-adjust: 100%;
+    scroll-padding-top: calc(var(--header-h) + 12px);
+  }
+
+  body {
+    background: var(--night);
+    color: var(--paper);
+    font-family: var(--font-sans);
+    font-size: 1.0625rem;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    overflow-x: clip;
+  }
+
+  ::selection {
+    background: var(--gold);
+    color: var(--night);
+  }
+
+  /* The ring follows each element's own radius. */
+  :focus-visible {
+    outline: 2px solid var(--gold);
+    outline-offset: 3px;
+  }
+
+  /* !important reverses layer order, so in base this beats even `!` utilities. */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 1ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 1ms !important;
+      scroll-behavior: auto !important;
+    }
+    .vsl-frame {
+      --tilt: 0 !important;
+    }
+  }
+}
+
+@layer components {
+  /* ── Type scale ─────────────────────────────────────────────────────────── */
+  .t-display {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: clamp(2.3rem, 1.25rem + 3.5vw, 4.5rem);
+    line-height: 1.02;
+    letter-spacing: -0.035em;
+    text-wrap: balance;
+  }
+  .t-h2 {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: clamp(1.85rem, 1.3rem + 2.1vw, 3.1rem);
+    line-height: 1.06;
+    letter-spacing: -0.03em;
+    text-wrap: balance;
+  }
+  .t-h3 {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: clamp(1.2rem, 1.05rem + 0.6vw, 1.55rem);
+    line-height: 1.2;
+    letter-spacing: -0.015em;
+  }
+  .t-lead {
+    font-size: clamp(1.1rem, 1rem + 0.45vw, 1.3rem);
+    line-height: 1.6;
+    color: var(--muted);
+    text-wrap: pretty;
+  }
+  .t-small {
+    font-size: 0.875rem;
+    line-height: 1.5;
+  }
+  .t-num {
+    font-family: var(--font-display);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.02em;
+  }
+  .measure {
+    max-width: 62ch;
+  }
+
+  /* ── Layout ─────────────────────────────────────────────────────────────── */
+  .shell {
+    width: 100%;
+    max-width: 1240px;
+    margin-inline: auto;
+    padding-inline: var(--gutter);
+  }
+  .section {
+    position: relative;
+    padding-block: var(--section-space);
+  }
+
+  /* ── Controls ───────────────────────────────────────────────────────────── */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    min-height: 52px;
+    padding: 0.85rem 1.5rem;
+    border-radius: var(--radius-control);
+    font-weight: 700;
+    font-size: 1rem;
+    line-height: 1.2;
+    text-decoration: none;
+    transition:
+      transform 160ms ease,
+      background-color 160ms ease,
+      box-shadow 160ms ease,
+      color 160ms ease;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    user-select: none;
+  }
+  .btn:active {
+    transform: translateY(1px) scale(0.99);
+  }
+  .btn[disabled],
+  .btn[aria-disabled="true"] {
+    opacity: 0.55;
+    pointer-events: none;
+  }
+  /* Champagne gold with a soft metallic sheen, like the plus in the logo. */
+  .btn-gold {
+    background: linear-gradient(180deg, #e2bf84, var(--gold) 55%, #c99f5c);
+    color: #1d1404;
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 0.28),
+      inset 0 -2px 0 rgb(0 0 0 / 0.18),
+      0 10px 30px -12px rgb(216 176 111 / 0.6);
+  }
+  .btn-gold:hover {
+    background: linear-gradient(180deg, #ecca91, #e0ba7b 55%, #d2a966);
+  }
+  .btn-ghost {
+    background: rgb(242 239 233 / 0.06);
+    color: var(--paper);
+    border: 1px solid var(--line-strong);
+  }
+  .btn-ghost:hover {
+    background: rgb(242 239 233 / 0.1);
+  }
+  .btn-sm {
+    min-height: 42px;
+    padding: 0.55rem 1rem;
+    font-size: 0.9375rem;
+    border-radius: 12px;
+  }
+
+  .field {
+    width: 100%;
+    min-height: 54px;
+    padding: 0.85rem 1rem;
+    border-radius: var(--radius-control);
+    background: rgb(7 7 8 / 0.6);
+    border: 1px solid var(--line-strong);
+    color: var(--paper);
+    font-size: 1rem;
+    transition:
+      border-color 140ms ease,
+      box-shadow 140ms ease;
+  }
+  .field::placeholder {
+    color: var(--faint);
+  }
+  .field:focus {
+    outline: none;
+    border-color: var(--gold);
+    box-shadow: 0 0 0 3px rgb(216 176 111 / 0.22);
+  }
+  .field[aria-invalid="true"] {
+    border-color: var(--danger);
+  }
+  .check {
+    appearance: none;
+    flex: none;
+    width: 22px;
+    height: 22px;
+    margin-top: 2px;
+    border-radius: 7px;
+    border: 1.5px solid var(--line-strong);
+    background: rgb(7 7 8 / 0.6);
+    display: grid;
+    place-content: center;
+    cursor: pointer;
+  }
+  .check:checked {
+    background: var(--gold);
+    border-color: var(--gold);
+  }
+  .check:checked::after {
+    content: "";
+    width: 11px;
+    height: 6px;
+    border-left: 2.5px solid #1d1404;
+    border-bottom: 2.5px solid #1d1404;
+    transform: translateY(-1px) rotate(-45deg);
+  }
+
+  /* ── Surfaces ───────────────────────────────────────────────────────────── */
+  /* Dark tinted base first, so text stays readable where backdrop-filter is unsupported or off. */
+  .glass {
+    background:
+      linear-gradient(180deg, rgb(242 239 233 / 0.075), rgb(242 239 233 / 0.025)),
+      rgb(19 19 22 / 0.72);
+    border: 1px solid var(--line);
+    backdrop-filter: blur(16px) saturate(1.2);
+    -webkit-backdrop-filter: blur(16px) saturate(1.2);
+  }
+  .panel {
+    background: linear-gradient(180deg, var(--panel), var(--deep));
+    border: 1px solid var(--line);
+    border-radius: var(--radius-panel);
+  }
+  .sample-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.2rem 0.55rem;
+    border-radius: 999px;
+    background: rgb(201 154 98 / 0.16);
+    color: var(--kraft);
+    border: 1px dashed rgb(201 154 98 / 0.55);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+  }
+
+  /* Quiet backdrop: a champagne glow under the hero and a cool silver one opposite. */
+  .ambient {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background:
+      radial-gradient(60% 45% at 72% 30%, rgb(216 176 111 / 0.11), transparent 70%),
+      radial-gradient(40% 35% at 15% 85%, rgb(214 208 203 / 0.06), transparent 70%);
+  }
+
+  /* ── VSL tilt (CSS 3D, flattens as it scrolls into view) ────────────────── */
+  .vsl-stage {
+    perspective: 1400px;
+    perspective-origin: 50% 0%;
+  }
+  .vsl-frame {
+    --tilt: 1;
+    transform: rotateX(calc(var(--tilt) * 22deg)) scale(calc(1 - var(--tilt) * 0.06));
+    transform-origin: 50% 100%;
+    transform-style: preserve-3d;
+    will-change: transform;
+    border-radius: var(--radius-card);
+    box-shadow:
+      0 calc(30px + var(--tilt) * 50px) calc(60px + var(--tilt) * 40px) -30px rgb(0 0 0 / 0.75),
+      0 0 0 1px var(--line-strong);
+  }
+
+  /* ── Coverflow (testimonials) ───────────────────────────────────────────── */
+  .coverflow {
+    perspective: 1200px;
+    touch-action: pan-y;
+  }
+  .coverflow-card {
+    --offset: 0;
+    --abs: 0;
+    position: absolute;
+    left: 50%;
+    top: 0;
+    transform: translateX(-50%) translateX(calc(var(--offset) * min(58%, 300px)))
+      translateZ(calc(var(--abs) * -170px)) rotateY(calc(var(--offset) * -32deg));
+    transition:
+      transform 620ms cubic-bezier(0.22, 0.8, 0.2, 1),
+      opacity 620ms ease,
+      filter 620ms ease;
+    opacity: calc(1 - var(--abs) * 0.28);
+    filter: brightness(calc(1 - var(--abs) * 0.22));
+  }
+
+  /* ── Curved gallery (results) ───────────────────────────────────────────── */
+  /* Not "ring*": Tailwind's ring utility would draw a 1px outline on the cylinder. */
+  .cyl-stage {
+    perspective: 1600px;
+    touch-action: pan-y;
+  }
+  .cyl {
+    transform-style: preserve-3d;
+    will-change: transform;
+  }
+  .cyl-item {
+    position: absolute;
+    inset: 0;
+    margin: auto;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+  }
+
+  /* ── Misc ───────────────────────────────────────────────────────────────── */
+  .marquee-mask {
+    mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+  }
+  .hairline {
+    height: 1px;
+    background: var(--line);
+  }
+  .scrollbar-none {
+    scrollbar-width: none;
+  }
+  .scrollbar-none::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* The single orchestrated load moment: hero copy, then CTA, then cards. */
+  .hero-in > * {
+    animation: rise-in 720ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  }
+  .hero-in > *:nth-child(2) {
+    animation-delay: 90ms;
+  }
+  .hero-in > *:nth-child(3) {
+    animation-delay: 180ms;
+  }
+  .hero-in > *:nth-child(4) {
+    animation-delay: 270ms;
+  }
+}
+
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes ping-soft {
+  0% {
+    transform: scale(1);
+    opacity: 0.7;
+  }
+  100% {
+    transform: scale(2.4);
+    opacity: 0;
+  }
+}
+
+/* Lenis smooth scroll. Unlayered on purpose: these state classes must win over utilities. */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+.lenis.lenis-stopped {
+  overflow: clip;
+}
