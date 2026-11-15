@@ -13,6 +13,7 @@ import {
 } from "@/lib/db/bookings";
 import { addActivity, findLeadByContact, getLead, setLeadStatus, type Lead, type LeadStatus } from "@/lib/db/leads";
 import { findMemberByEmail } from "@/lib/db/team";
+import { queueAirtableSync } from "@/lib/airtable/sync";
 import { getEvent, getInvitee, listEvents, listInvitees } from "@/lib/calendly/api";
 import { bookingFields, leadRefFromInvitee } from "@/lib/calendly/map";
 import type { CalendlyEvent, CalendlyInvitee } from "@/lib/calendly/types";
@@ -94,28 +95,38 @@ export async function recordInvitee(
     };
     const wasActive = existing?.status === "confirmed";
     let nextStatus: LeadStatus | null = null;
+    // Something the team's Airtable should reflect (repeat syncs of an unchanged booking stay quiet).
+    let changed = false;
 
     if (status === "confirmed") {
       if (BOOKABLE.has(lead.status) && lead.status !== "booked") nextStatus = "booked";
       if (inserted) {
         await addActivity(lead.id, invitee.old_invitee ? "rescheduled" : "booked", detail, null, q);
+        changed = true;
       } else if (
         existing?.start_at &&
         booking.start_at &&
         existing.start_at.getTime() !== booking.start_at.getTime()
       ) {
         await addActivity(lead.id, "rescheduled", { ...detail, from: existing.start_at.toISOString() }, null, q);
+        changed = true;
+      } else if (!existing?.start_at && booking.start_at) {
+        // A funnel booking saved before the API key: time and host just arrived.
+        changed = true;
       }
     } else if (wasActive || inserted) {
       if (status === "cancelled") {
         await addActivity(lead.id, "cancelled", { ...detail, reason: booking.cancel_reason }, null, q);
         // Rescheduling keeps the lead booked: the new invitee arrives on its own.
         if (lead.status === "booked" && !(await getActiveBookingForLead(lead.id, q))) nextStatus = "cancelled";
+        changed = true;
       }
     }
     if (nextStatus) await setLeadStatus(lead.id, nextStatus, q);
-    return { booking, inserted, nextStatus, wasActive };
+    return { booking, inserted, nextStatus, wasActive, changed: changed || nextStatus !== null };
   });
+
+  if (outcome.changed) queueAirtableSync(lead.id, "booking");
 
   return {
     matched: true,

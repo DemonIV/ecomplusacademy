@@ -127,7 +127,7 @@ export const COPY = {
     promise: "Görüşme ücretsizdir ve satış baskısı yoktur. Sana uygun değilsek bunu açıkça söyleriz.",
     back: "Geri",
     contactTitle: "Sana nasıl ulaşalım?",
-    contactLead: "Görüşmeyi bu WhatsApp numarasından yapacağız; onay ve hatırlatma e-postana gelecek.",
+    contactLead: "Görüşme Zoom'dan yapılır; bağlantı, onay ve hatırlatmalar e-postana gelir. Gerekirse WhatsApp'tan yazarız.",
     fields: {
       fullName: { label: "Ad soyad", placeholder: "Adın ve soyadın" },
       phone: { label: "WhatsApp numaran", placeholder: "05xx xxx xx xx", hint: "Yurt dışındaysan ülke koduyla yaz, örn. +49…" },
@@ -165,7 +165,7 @@ export const COPY = {
       },
     },
     calendarTitle: (firstName: string) => `Harika ${firstName}, sana uyan saati seç`,
-    calendarLead: "Görüşme 30 dakika sürer. Seçtiğin saatte seni WhatsApp'tan arıyoruz.",
+    calendarLead: "Görüşme 30 dakika, Zoom'dan. Saati seçince bağlantı e-postana gelir.",
     noSlotWhatsappText: (firstName: string) =>
       `Merhaba, ben ${firstName}. Başvurumu yaptım ama takvimde bana uyan bir saat bulamadım.`,
   },
@@ -181,12 +181,12 @@ export const COPY = {
   thanks: {
     title: (firstName: string | null) => (firstName ? `Görüşmen planlandı, ${firstName}` : "Görüşmen planlandı"),
     lead: "Onay e-postan Calendly'den gönderildi; görüşmeden önce hatırlatma da gelecek.",
-    fallbackLead: "Görüşme bilgilerin Calendly'den e-postana gönderildi. Seçtiğin saatte seni WhatsApp'tan arayacağız.",
+    fallbackLead: "Görüşme saatin ve Zoom bağlantın Calendly'den e-postana gönderildi.",
     timeInEmail: "Saat bilgisi onay e-postanda",
-    /** Under the date and time when Calendly's API told us; otherwise the time is only in the e-mail. */
-    callNote: (phone: string | null, timeShown: boolean) =>
-      `${timeShown ? "Seni bu saatte" : "Seçtiğin saatte seni"} WhatsApp'tan arayacağız${phone ? ` (${phone})` : ""}.`,
-    channelNote: "Görüşme WhatsApp'tan, istersen Zoom'dan.",
+    /** Under the date and time; the Zoom link itself is in Calendly's e-mail (and below when already known). */
+    callNote: "Görüşme Zoom'dan. Bağlantı onay e-postanda; saatinde tıklaman yeterli.",
+    channelNote: "Bilgisayardan tarayıcıyla, telefondan Zoom uygulamasıyla katılabilirsin.",
+    join: "Zoom'a katıl",
     host: (name: string) => `Görüşmeci: ${name}.`,
     confirm: "WhatsApp'tan onayla",
     /** `when` like "5 Kasım Çarşamba 14:30" (Türkiye time); null when Calendly did not tell us. */
@@ -199,7 +199,7 @@ export const COPY = {
     whatsappText: "Merhaba, görüşme planladım ve bir sorum var.",
     prepTitle: "Görüşmeye hazırlık",
     prep: [
-      "Görüşme saatinde WhatsApp'ın açık, internetinin iyi olsun; sessiz bir yerde ol.",
+      "Birkaç dakika önce Zoom bağlantısını aç; sessiz, interneti iyi bir yerde ol.",
       "Mevcut durumunu ve hedefini birkaç cümleyle düşün.",
       "Bütçe ve zaman planını konuşacağız; kafandaki soruları not al.",
       "Görüşmeye karar verici olarak katıl; başkasına danışacaksan o da yanında olsun.",
@@ -260,7 +260,7 @@ export const COPY = {
       },
       {
         q: "Görüşme nasıl yapılıyor?",
-        a: "Seçtiğin saatte seni WhatsApp'tan arıyoruz; istersen Zoom'dan da görüşebiliriz. Onay ve hatırlatma e-postası Calendly'den gelir; saatini oradaki bağlantıdan tek tıkla değiştirebilirsin.",
+        a: "Zoom'dan, 30 dakika. Saati seçince Zoom bağlantısı, onay ve hatırlatma e-postaları Calendly'den gelir; saatini oradaki bağlantıdan tek tıkla değiştirebilirsin.",
       },
       {
         q: "Yurt dışında yaşıyorum, katılabilir miyim?",

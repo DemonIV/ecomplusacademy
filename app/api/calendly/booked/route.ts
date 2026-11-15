@@ -78,6 +78,7 @@ export async function POST(request: Request) {
             end: booking.end_at.toISOString(),
             hostName: booking.host_name,
             location: booking.location,
+            joinUrl: booking.join_url,
             rescheduleUrl: booking.reschedule_url,
             cancelUrl: booking.cancel_url,
           }

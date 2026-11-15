@@ -118,7 +118,7 @@ function BookingRow({ booking: b }: { booking: BookingWithHost }) {
       )}
       {b.join_url && b.status === "confirmed" && (
         <a className="mt-1 inline-block text-sm text-silver underline" href={b.join_url} target="_blank" rel="noopener noreferrer">
-          Görüşme bağlantısı
+          Görüşmeye katıl
         </a>
       )}
     </li>
@@ -176,7 +176,7 @@ export default async function LeadPage({ params }: PageProps<"/admin/leadler/[id
         {active?.start_at ? (
           <a
             className="btn btn-gold btn-sm"
-            href={whatsappLink(lead.phone, WHATSAPP.reminder(firstName, when(active.start_at)))}
+            href={whatsappLink(lead.phone, WHATSAPP.reminder(firstName, when(active.start_at), active.join_url))}
             target="_blank"
             rel="noopener"
           >
@@ -197,11 +197,11 @@ export default async function LeadPage({ params }: PageProps<"/admin/leadler/[id
         {active && (
           <a
             className="btn btn-ghost btn-sm"
-            href={whatsappLink(lead.phone, WHATSAPP.calling(firstName))}
+            href={whatsappLink(lead.phone, WHATSAPP.waiting(firstName, active.join_url))}
             target="_blank"
             rel="noopener"
           >
-            &quot;Arıyorum&quot; mesajı
+            &quot;Zoom&apos;dayım&quot; mesajı
           </a>
         )}
         {active?.reschedule_url && (

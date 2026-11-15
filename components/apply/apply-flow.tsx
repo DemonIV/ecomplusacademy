@@ -266,11 +266,7 @@ export function ApplyFlow() {
     } catch {
       // network hiccup: see above
     }
-    const stored: StoredBooking = {
-      firstName: q.firstName,
-      phone: normalizePhone(state.contact.phone)?.digits ?? null,
-      booking,
-    };
+    const stored: StoredBooking = { firstName: q.firstName, booking };
     writeSession(STORAGE_KEYS.booking, stored);
     removeSession(STORAGE_KEYS.apply);
     router.push("/tesekkurler");

@@ -48,10 +48,10 @@ Videos are not in the repo: they live in the Vercel Blob store `ecomplusacademy-
 
 ## Calendly setup
 
-1. **Event** (Calendly → Event types → New):
-   - 30 minutes, one-on-one.
-   - Location: **Phone call → "I will call my invitee"**. The funnel pre-fills the applicant's WhatsApp number in this field.
-   - Description: "Seçtiğin saatte seni WhatsApp'tan arayacağız."
+1. **Event** (Calendly → Event types → New → Team → **Round Robin**):
+   - 30 minutes. Hosts: everyone who takes calls. Round Robin needs a Teams plan.
+   - Location: **Zoom**. Each host first connects their own Zoom account under Calendly → Integrations → Zoom. Calendly then creates a separate Zoom meeting for every booking and puts the link in its e-mails. The panel shows the link with the booking.
+   - Description: "Görüşme Zoom'dan; bağlantı bu e-postada."
 2. **Availability**:
    - Working hours
    - Buffer between calls
@@ -64,13 +64,30 @@ Videos are not in the repo: they live in the Vercel Blob store `ecomplusacademy-
 6. **Webhook** (Standard plan and above):
    - Generate a random value for `CALENDLY_WEBHOOK_SIGNING_KEY`.
    - Once the site is live, press **"Webhook'u kur"** under `/admin/durum`.
-   - Without a webhook, changes reach the panel through the hourly sync.
+   - Without a webhook, changes reach the panel through the daily sync (08:00 Türkiye time on Vercel Hobby).
 7. **Team**: everyone who takes calls is added to the panel (`/admin/ekip`) **with the same e-mail address as their Calendly account**. Bookings are matched to people by that e-mail.
 
 How a booking reaches the panel:
 - **Funnel**: the embed reports the booking. The server reads the details with the API key and moves the lead to "booked".
 - **Link sent by the team over WhatsApp**: carries the lead id in the `salesforce_uuid` parameter. It arrives through the webhook, or through the hourly sync if there is no webhook.
 - **Cancel / reschedule**: done in Calendly; the panel updates itself.
+
+## Airtable (sales team's table)
+
+The team tracks every lead (Instagram DMs, WhatsApp, the site) in the Airtable base "Ecom Plus Academy – Satış Takip", table "Leadler". The site writes its qualified applicants there:
+
+| Event | Airtable row |
+|---|---|
+| Qualified application | New row: Kanal "Site (Calendly)", Aşama "Yeni lead", İlgi from the tier (A Sıcak, B Ilık, C Soğuk), contact details |
+| Booking (funnel, webhook or sync) | Aşama "Randevu alındı", Randevu Tarihi, Satışçı (the host's first name; a new name is added to the options) |
+| Cancellation | Aşama "Yeni lead", Randevu Tarihi cleared |
+| Outcome in the panel | "Görüşme yapıldı – takipte", "Görüşmeye gelmedi", "Satış" or "Satış değil" |
+
+- A person the team already has (same e-mail, or same last 10 phone digits) is not duplicated: the site updates that row, fills in only empty contact fields and keeps the team's name, channel, interest and, for an application, stage.
+- Disqualified applicants are not written.
+- Sales still reach Meta only from the panel ("Sonucu gir"). A stage changed by hand in Airtable does not come back to the site.
+- Writes happen after the response. If Airtable is down, the daily sync re-sends qualified applicants of the last 3 days that never arrived.
+- Setup: `AIRTABLE_TOKEN` (scopes `data.records:read`, `data.records:write`, `schema.bases:read`, this base only) and `AIRTABLE_BASE_ID`. Column and option names live in `config/airtable.ts`; `/admin/durum` → "Airtable'ı test et" compares them with the table.
 
 ## Going live
 

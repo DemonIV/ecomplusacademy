@@ -59,7 +59,7 @@ beforeAll(async () => {
   pg = await PGlite.create({ extensions: { btree_gist } });
   q = { query: async <T>(text: string, params?: unknown[]) => (await pg.query(text, params)).rows as T[] };
   const ran = await migrate();
-  expect(ran).toEqual(["0001_init.sql", "0002_calendly.sql"]);
+  expect(ran).toEqual(["0001_init.sql", "0002_calendly.sql", "0003_airtable.sql"]);
   const { rows } = await pg.query<{ id: string }>(
     "insert into team_members (email, name, role, accepts_bookings) values ('closer@site.test', 'Closer', 'closer', true) returning id",
   );

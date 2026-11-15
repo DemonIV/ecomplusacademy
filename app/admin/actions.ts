@@ -5,6 +5,10 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { after } from "next/server";
 import { z } from "zod";
+import { AIRTABLE } from "@/config/airtable";
+import { getTable } from "@/lib/airtable/api";
+import { checkTable } from "@/lib/airtable/check";
+import { retryMissingAirtable } from "@/lib/airtable/sync";
 import { endSession, requireUser, startSession } from "@/lib/auth/session";
 import { hashPassword, passwordProblem, verifyPassword } from "@/lib/auth/password";
 import { createWebhook, listWebhooks, me } from "@/lib/calendly/api";
@@ -249,6 +253,23 @@ export async function setupCalendlyWebhook(): Promise<ActionState> {
     return fail(`Webhook kurulamadı: ${created.error}`);
   }
   return fail("Webhook kurulamadı: yetki yok. Hesap sahibinin anahtarıyla tekrar dene.");
+}
+
+/** Reads the table's columns and options, compares them with config/airtable.ts, then sends recent applicants that are missing. */
+export async function testAirtable(): Promise<ActionState> {
+  await requireUser("admin");
+  if (!integrations.airtable()) return fail("AIRTABLE_TOKEN ve AIRTABLE_BASE_ID tanımlı değil.");
+  const table = await getTable();
+  if (!table.ok) return fail(`Airtable yanıt vermedi: ${table.error}`);
+  if (!table.data) return fail(`"${AIRTABLE.table}" tablosu bulunamadı. config/airtable.ts'deki adı kontrol et.`);
+  const { missingFields, missingOptions } = checkTable(table.data);
+  if (missingFields.length) return fail(`Tabloda bulunamayan sütunlar: ${missingFields.join(", ")}.`);
+  if (missingOptions.length) return fail(`Seçeneklerde olmayan değerler: ${missingOptions.join("; ")}.`);
+  const retry = await retryMissingAirtable();
+  refresh();
+  return retry.failed
+    ? fail(`Tablo uyumlu ama ${retry.failed} başvuru gönderilemedi; sunucu kayıtlarına bak.`)
+    : done(`"${AIRTABLE.table}" tablosu uyumlu.${retry.sent ? ` Eksik ${retry.sent} başvuru gönderildi.` : ""}`);
 }
 
 export async function runCalendlySync(): Promise<ActionState> {

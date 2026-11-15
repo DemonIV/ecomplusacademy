@@ -1,6 +1,14 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
-import { runCalendlySync, sendTestCapi, sendTestEmail, setupCalendlyWebhook, testCalendly } from "@/app/admin/actions";
+import {
+  runCalendlySync,
+  sendTestCapi,
+  sendTestEmail,
+  setupCalendlyWebhook,
+  testAirtable,
+  testCalendly,
+} from "@/app/admin/actions";
+import { AIRTABLE } from "@/config/airtable";
 import { ActionForm, SubmitButton } from "@/components/admin/action-form";
 import { AdminShell, Card, PageTitle, when } from "@/components/admin/ui";
 import { BOOKING } from "@/config/booking";
@@ -148,6 +156,12 @@ export default async function StatusPage() {
               )}
             </Check>
 
+            <Check state={integrations.airtable() ? "ok" : "optional"} label="Airtable">
+              {integrations.airtable()
+                ? `Nitelikli başvurular "${AIRTABLE.table}" tablosuna yazılır; randevu ve görüşme sonucuyla aşaması güncellenir. Sütun adlarını yandan test et.`
+                : "Kapalı. Açmak için AIRTABLE_TOKEN ve AIRTABLE_BASE_ID tanımla."}
+            </Check>
+
             <Check state={integrations.metaPixel() ? "ok" : "off"} label="Meta Pixel">
               {integrations.metaPixel() ? "NEXT_PUBLIC_META_PIXEL_ID tanımlı." : "NEXT_PUBLIC_META_PIXEL_ID tanımlı değil."}
             </Check>
@@ -214,6 +228,19 @@ export default async function StatusPage() {
 
           <Card title="Test et">
             <div className="grid gap-5 text-sm">
+              {integrations.airtable() && (
+                <div className="border-b border-line pb-5">
+                  <p className="mb-2 text-muted">
+                    Airtable tablosunun sütun ve seçeneklerini ayarlarla karşılaştırır, son 3 günün eksik başvurularını
+                    gönderir.
+                  </p>
+                  <ActionForm action={testAirtable}>
+                    <SubmitButton className="btn btn-ghost btn-sm" pending="Kontrol ediliyor…">
+                      Airtable&apos;ı test et
+                    </SubmitButton>
+                  </ActionForm>
+                </div>
+              )}
               <div>
                 <p className="mb-2 text-muted">
                   Meta&apos;ya test olayı gönderir; yalnızca META_TEST_EVENT_CODE tanımlıyken çalışır.

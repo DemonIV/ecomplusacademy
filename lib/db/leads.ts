@@ -47,6 +47,8 @@ export type Lead = {
   closed_at: Date | null;
   lost_reason: string | null;
   notes: string | null;
+  /** The person's row in the team's Airtable base, once written there. */
+  airtable_record_id: string | null;
 };
 
 const LEAD_COLUMNS = `
@@ -54,7 +56,7 @@ const LEAD_COLUMNS = `
   answers, score, tier, qualified, disqualify_reason, status, apply_count, last_applied_at,
   kvkk_consent_at, marketing_consent, first_touch, last_touch, fbclid, fbc, fbp,
   landing_url, referrer, ip, user_agent, owner_id, deal_value::float8 as deal_value,
-  currency, closed_at, lost_reason, notes`;
+  currency, closed_at, lost_reason, notes, airtable_record_id`;
 
 export async function getLead(id: string, q?: Queryable): Promise<Lead | null> {
   if (!isUuid(id)) return null;
@@ -205,6 +207,23 @@ export async function recordOutcome(
      where id = $1`,
     [id, outcome.status, outcome.dealValue ?? null, outcome.lostReason ?? null, outcome.ownerId ?? null],
   );
+}
+
+export async function setAirtableRecordId(id: string, recordId: string): Promise<void> {
+  const db = await getDb();
+  await db.query("update leads set airtable_record_id = $2 where id = $1", [id, recordId]);
+}
+
+/** Qualified leads of the last days that never reached Airtable (it was down, or the key came later). */
+export async function leadsMissingAirtable(sinceDays: number, limit = 50): Promise<string[]> {
+  const db = await getDb();
+  const rows = await db.query<{ id: string }>(
+    `select id from leads
+      where qualified and airtable_record_id is null and last_applied_at > now() - ($1::int * interval '1 day')
+      order by last_applied_at limit $2`,
+    [sinceDays, limit],
+  );
+  return rows.map((r) => r.id);
 }
 
 export async function updateLeadNotes(id: string, notes: string): Promise<void> {

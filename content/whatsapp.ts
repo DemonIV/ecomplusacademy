@@ -8,10 +8,14 @@ import { BRAND } from "@/content/brand";
 export const WHATSAPP = {
   hello: (firstName: string) => `Merhaba ${firstName}, ${BRAND.name}'den yazıyorum. Başvurun bize ulaştı.`,
   bookingLink: (firstName: string, url: string) =>
-    `Merhaba ${firstName}, ${BRAND.name}'den yazıyorum. ${BRAND.callName} için sana uyan saati buradan seçebilirsin: ${url}\nSeçtiğin saatte seni WhatsApp'tan arayacağız.`,
-  reminder: (firstName: string, whenLabel: string) =>
-    `Merhaba ${firstName}, ${whenLabel} görüşmemizi hatırlatmak istedim. O saatte seni WhatsApp'tan arayacağız. Saat uymuyorsa yazman yeterli.`,
+    `Merhaba ${firstName}, ${BRAND.name}'den yazıyorum. ${BRAND.callName} için sana uyan saati buradan seçebilirsin: ${url}\nGörüşme Zoom'dan; saati seçince bağlantı e-postana gelir.`,
+  /** `joinUrl`: the booking's Zoom link when Calendly has created it. */
+  reminder: (firstName: string, whenLabel: string, joinUrl?: string | null) =>
+    `Merhaba ${firstName}, ${whenLabel} Zoom görüşmemizi hatırlatmak istedim. ${
+      joinUrl ? `Bağlantı: ${joinUrl}` : "Bağlantı, Calendly'nin gönderdiği onay e-postasında."
+    } Saat uymuyorsa yazman yeterli.`,
   rescheduleLink: (firstName: string, url: string) =>
     `Merhaba ${firstName}, görüşme saatini buradan değiştirebilirsin: ${url}`,
-  calling: (firstName: string) => `Merhaba ${firstName}, görüşme saatimiz geldi. Birazdan WhatsApp'tan arıyorum.`,
+  waiting: (firstName: string, joinUrl?: string | null) =>
+    `Merhaba ${firstName}, görüşme saatimiz geldi, Zoom'da seni bekliyorum.${joinUrl ? ` Bağlantı: ${joinUrl}` : ""}`,
 };

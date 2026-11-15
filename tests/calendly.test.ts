@@ -79,7 +79,8 @@ describe("scheduling link", () => {
     expect(url.origin + url.pathname).toBe(base);
     expect(url.searchParams.get("name")).toBe("Ayşe Yılmaz");
     expect(url.searchParams.get("email")).toBe("ayse@example.com");
-    expect(url.searchParams.get("location")).toBe("+905321234567");
+    // Zoom location: Calendly must not receive the phone as a location.
+    expect(url.searchParams.has("location")).toBe(false);
     expect(url.searchParams.get("salesforce_uuid")).toBe(LEAD);
     expect(url.searchParams.get("utm_campaign")).toBe("kasim lansman");
     expect(url.searchParams.has("utm_content")).toBe(false);
@@ -105,7 +106,7 @@ describe("scheduling link", () => {
     const url = new URL(calendlyUrl(base, { phone: "+905321234567" }, { phoneAnswer: "a2" }));
     expect(url.searchParams.get("a2")).toBe("+905321234567");
     const ignored = new URL(calendlyUrl(base, { phone: "+905321234567" }, { phoneAnswer: "x; drop" }));
-    expect([...ignored.searchParams.keys()]).toEqual(["location"]);
+    expect([...ignored.searchParams.keys()]).toEqual([]);
   });
 
   it("drops an existing query string from the base link", () => {
@@ -188,6 +189,11 @@ describe("invitee → booking mapping", () => {
     expect(moved).toMatchObject({ status: "rescheduled", cancelReason: "calendly_rescheduled" });
   });
 
+  it("keeps the Zoom link Calendly created for the booking", () => {
+    const fields = bookingFields(invitee(), event({ location: { type: "zoom", join_url: "https://us06web.zoom.us/j/123" } }));
+    expect(fields).toMatchObject({ location: "Zoom", joinUrl: "https://us06web.zoom.us/j/123" });
+  });
+
   it("works without the event (funnel record before the API key)", () => {
     const fields = bookingFields(invitee(), null);
     expect(fields).toMatchObject({ eventUri: EVENT_URI, start: null, end: null, hostEmail: null, location: null });
@@ -196,6 +202,7 @@ describe("invitee → booking mapping", () => {
   it("labels locations for the agenda", () => {
     expect(locationLabel({ type: "outbound_call", location: "+905321234567" })).toBe("Biz arıyoruz: +905321234567");
     expect(locationLabel({ type: "google_conference" })).toBe("Google Meet");
+    expect(locationLabel({ type: "zoom", join_url: "https://us06web.zoom.us/j/123" })).toBe("Zoom");
     expect(locationLabel(null)).toBeNull();
   });
 });

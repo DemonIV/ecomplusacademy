@@ -46,19 +46,22 @@ function CallRow({ item, now }: { item: AgendaItem; now: Date }) {
         </span>
         <span className="mt-1 flex flex-wrap gap-x-4 gap-y-1 text-sm text-muted">
           <span>{item.host_label ?? "Görüşmeci atanmamış"}</span>
-          <span>{item.location ?? `WhatsApp: ${formatPhone(item.lead_phone)}`}</span>
+          {item.location && <span>{item.location}</span>}
           {item.join_url && (
             <a className="text-silver underline" href={item.join_url} target="_blank" rel="noopener noreferrer">
-              Görüşme bağlantısı
+              Görüşmeye katıl
             </a>
           )}
           <a className="underline hover:text-paper" href={whatsappLink(item.lead_phone)} target="_blank" rel="noopener">
-            WhatsApp
+            WhatsApp {formatPhone(item.lead_phone)}
           </a>
           {!over && !live && (
             <a
               className="underline hover:text-paper"
-              href={whatsappLink(item.lead_phone, WHATSAPP.reminder(firstName, formatTrDateTime(item.start_at, TZ)))}
+              href={whatsappLink(
+                item.lead_phone,
+                WHATSAPP.reminder(firstName, formatTrDateTime(item.start_at, TZ), item.join_url),
+              )}
               target="_blank"
               rel="noopener"
             >
@@ -68,11 +71,11 @@ function CallRow({ item, now }: { item: AgendaItem; now: Date }) {
           {live && (
             <a
               className="underline hover:text-paper"
-              href={whatsappLink(item.lead_phone, WHATSAPP.calling(firstName))}
+              href={whatsappLink(item.lead_phone, WHATSAPP.waiting(firstName, item.join_url))}
               target="_blank"
               rel="noopener"
             >
-              &quot;Arıyorum&quot; yaz
+              &quot;Zoom&apos;dayım&quot; yaz
             </a>
           )}
         </span>

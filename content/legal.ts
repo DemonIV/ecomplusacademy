@@ -45,7 +45,7 @@ export const KVKK: LegalDoc = {
     {
       heading: "Aktarılan taraflar",
       body: [
-        "Hizmetin sunulması için çalıştığımız tedarikçiler: barındırma (Vercel Inc.), veritabanı (Neon Inc., AB/Frankfurt sunucusu), görüşme randevusu ile onay ve hatırlatma e-postaları (Calendly LLC, ABD), görüşmenin yapıldığı ve sizinle yazıştığımız WhatsApp (WhatsApp LLC / Meta Platforms), ekip içi bildirim e-postaları (Resend Inc.).",
+        "Hizmetin sunulması için çalıştığımız tedarikçiler: barındırma (Vercel Inc.), veritabanı (Neon Inc., AB/Frankfurt sunucusu), görüşme randevusu ile onay ve hatırlatma e-postaları (Calendly LLC, ABD), görüşmenin yapıldığı Zoom (Zoom Communications, Inc., ABD), sizinle yazıştığımız WhatsApp (WhatsApp LLC / Meta Platforms), satış ekibinin başvuru takip tablosu (Airtable / Formagrid Inc., ABD), ekip içi bildirim e-postaları (Resend Inc.).",
         "Açık rızanız varsa reklam ölçümü için Meta Platforms Ireland Ltd.",
         "Bu tedarikçilerin bir kısmı verileri yurt dışındaki sunucularda işler. Yurt dışına aktarım KVKK m. 9 kapsamındaki şartlara uygun olarak yapılır.",
       ],

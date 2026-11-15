@@ -65,6 +65,11 @@ export const env = {
   /** Our own random value; sent to Calendly when the webhook is created from /admin/durum. */
   calendlyWebhookKey: () => read("CALENDLY_WEBHOOK_SIGNING_KEY"),
 
+  /** Airtable personal access token (scopes: data.records:read/write, schema.bases:read; this base only). */
+  airtableToken: () => read("AIRTABLE_TOKEN"),
+  /** "app…" id of the "Satış Takip" base. */
+  airtableBaseId: () => read("AIRTABLE_BASE_ID"),
+
   /** Optional: only the team's daily digest e-mail uses Resend. */
   resendApiKey: () => read("RESEND_API_KEY"),
   resendFrom: () => read("RESEND_FROM"),
@@ -78,4 +83,5 @@ export const integrations = {
   calendly: () => Boolean(env.calendlyToken()),
   calendlyWebhook: () => Boolean(env.calendlyWebhookKey()),
   email: () => Boolean(env.resendApiKey() && env.resendFrom()),
+  airtable: () => Boolean(env.airtableToken() && env.airtableBaseId()),
 };

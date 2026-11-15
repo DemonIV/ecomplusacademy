@@ -5,19 +5,19 @@ import { BOOKING } from "@/config/booking";
 import { BRAND } from "@/content/brand";
 import { COPY } from "@/content/copy";
 import { readSession, STORAGE_KEYS } from "@/lib/client/storage";
-import { formatPhone, whatsappLink } from "@/lib/phone";
+import { whatsappLink } from "@/lib/phone";
 
 /** What the application flow leaves for this page after Calendly confirmed a booking. */
 export type StoredBooking = {
   firstName?: string | null;
-  /** Digits with country code: the number we will call on WhatsApp. */
-  phone?: string | null;
   /** Filled when Calendly's API answered; null before the API key is set up. */
   booking: {
     start: string;
     end: string;
     hostName: string | null;
     location: string | null;
+    /** The Zoom link; Calendly creates it a few seconds after booking, so it can still be null. */
+    joinUrl?: string | null;
     rescheduleUrl: string | null;
     cancelUrl: string | null;
   } | null;
@@ -49,7 +49,6 @@ export function BookingSummary() {
     );
   }
 
-  const phone = stored.phone ? formatPhone(stored.phone) : null;
   const zone = Intl.DateTimeFormat().resolvedOptions().timeZone || BOOKING.timeZone;
   const start = booking ? new Date(booking.start) : null;
   const trTime = start ? fmt(start, BOOKING.timeZone, { hour: "2-digit", minute: "2-digit" }) : null;
@@ -76,12 +75,17 @@ export function BookingSummary() {
           <p className="t-h3 mt-3">{T.timeInEmail}</p>
         )}
         <p className="mt-3 text-muted">
-          {T.callNote(phone, Boolean(start))}
+          {T.callNote}
           {booking?.hostName ? ` ${T.host(booking.hostName)}` : ""}
         </p>
         <p className="mt-1 text-sm text-faint">{T.channelNote}</p>
         <div className="mt-6 flex flex-wrap gap-3">
           <ConfirmButton when={when} inline />
+          {booking?.joinUrl && (
+            <a className="btn btn-ghost btn-sm" href={booking.joinUrl} target="_blank" rel="noopener noreferrer">
+              {T.join}
+            </a>
+          )}
           {booking?.rescheduleUrl && (
             <a className="btn btn-ghost btn-sm" href={booking.rescheduleUrl} target="_blank" rel="noopener noreferrer">
               {T.reschedule}

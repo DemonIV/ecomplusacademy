@@ -23,6 +23,7 @@ import {
   updateLeadOnReapply,
   type LeadInsert,
 } from "@/lib/db/leads";
+import { queueAirtableSync } from "@/lib/airtable/sync";
 import { getActiveBookingForLead } from "@/lib/db/bookings";
 import { createLeadToken } from "@/lib/lead-token";
 import { trackLeadEvent } from "@/lib/meta/track";
@@ -213,6 +214,7 @@ export async function POST(request: Request) {
   if (!result.qualified) {
     return json({ status: "disqualified", events: { submit: submitId } });
   }
+  queueAirtableSync(lead.id, "applied");
   return json({
     status: "qualified",
     leadToken: createLeadToken(lead.id),

@@ -60,10 +60,9 @@ export function calendlyUrl(base: string, prefill: CalendlyPrefill, options: Cal
   }
   add("name", prefill.name, 120);
   add("email", prefill.email, 160);
-  if (prefill.phone) {
-    // "Phone call (host calls invitee)" location: Calendly pre-fills the number from `location`.
-    add("location", prefill.phone, 20);
-    if (options.phoneAnswer && /^a([1-9]|10)$/.test(options.phoneAnswer)) add(options.phoneAnswer, prefill.phone, 20);
+  // The call happens on Zoom (Calendly creates the meeting), so the phone only goes to a custom question, if any.
+  if (prefill.phone && options.phoneAnswer && /^a([1-9]|10)$/.test(options.phoneAnswer)) {
+    add(options.phoneAnswer, prefill.phone, 20);
   }
   for (const key of UTM_KEYS) add(key, prefill.utm?.[key]);
   add("salesforce_uuid", prefill.leadId, 64);

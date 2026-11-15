@@ -1,4 +1,5 @@
 import "server-only";
+import { queueAirtableSync } from "@/lib/airtable/sync";
 import { addActivity, getLead, recordOutcome, type Lead } from "@/lib/db/leads";
 import { getLatestBookingForLead } from "@/lib/db/bookings";
 import { listLeadEvents } from "@/lib/db/events";
@@ -51,6 +52,7 @@ export async function applyOutcome(input: {
     },
     input.actorId,
   );
+  queueAirtableSync(lead.id, "outcome");
   const updated = (await getLead(lead.id)) ?? lead;
   return { ok: true, lead: updated };
 }
