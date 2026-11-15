@@ -48,5 +48,7 @@ export function setUserData(user: {
     ...(user.firstName ? { fn: user.firstName.trim().toLowerCase() } : {}),
     ...(user.lastName ? { ln: user.lastName.trim().toLowerCase() } : {}),
     ...(user.externalId ? { external_id: user.externalId } : {}),
+    // Same rule as the server (lib/meta/capi.ts): only a +90 number tells us the country for sure.
+    ...(user.phone?.startsWith("90") ? { country: "tr" } : {}),
   });
 }

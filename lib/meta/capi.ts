@@ -23,7 +23,7 @@ export type CapiUser = {
   userAgent?: string | null;
   fbc?: string | null;
   fbp?: string | null;
-  country?: string | null; // ISO-3166 alpha-2, lower case
+  country?: string | null; // ISO-3166 alpha-2, lower case; derived from a +90 phone when missing
 };
 
 export type CapiEvent = {
@@ -41,27 +41,43 @@ export type CapiResult =
   | { status: "failed"; error: string; fbtraceId?: string; testEventCode?: string }
   | { status: "skipped"; reason: "not_configured" };
 
+/**
+ * The same rules Meta's own pixel (fbevents.js) applies before hashing, so a
+ * server event hashes exactly like its browser copy: names lose ASCII
+ * punctuation and whitespace, then are lower-cased without a locale.
+ */
+const NAME_PUNCTUATION = /[!"#$%&'()*+,\-./:;<=>?@ [\\\]^_`{|}~\s]+/g;
+
 const normalize = {
   email: (v: string) => v.trim().toLowerCase(),
   phone: (v: string) => v.replace(/\D/g, ""),
-  // Meta wants lower-case, no punctuation; keep Turkish letters (UTF-8).
-  name: (v: string) => v.trim().toLocaleLowerCase("tr-TR").replace(/[\s'’.,-]+/g, ""),
+  name: (v: string) => v.replace(NAME_PUNCTUATION, "").toLowerCase(),
+  // Turkish casing only differs for I/İ: "YILMAZ" → "yılmaz", where the rule above gives "yilmaz".
+  nameTurkish: (v: string) => v.replace(NAME_PUNCTUATION, "").toLocaleLowerCase("tr-TR"),
+  id: (v: string) => v.replace(/\s+/g, "").toLowerCase(),
+  country: (v: string) => v.trim().toLowerCase(),
 };
 
-function hashed(value: string | null | undefined, fn: (v: string) => string): string[] | undefined {
+function hashed(value: string | null | undefined, ...fns: ((v: string) => string)[]): string[] | undefined {
   if (!value) return undefined;
-  const normalized = fn(value);
-  return normalized ? [sha256Hex(normalized)] : undefined;
+  const variants = [...new Set(fns.map((fn) => fn(value)).filter(Boolean))];
+  return variants.length ? variants.map(sha256Hex) : undefined;
+}
+
+/** Only the calling code we can be sure of; a wrong country hurts matching more than none. */
+function countryFromPhone(phone: string | null | undefined): string | null {
+  return phone && normalize.phone(phone).startsWith("90") ? "tr" : null;
 }
 
 export function buildUserData(user: CapiUser): Record<string, unknown> {
   const data: Record<string, unknown> = {
     em: hashed(user.email, normalize.email),
     ph: hashed(user.phone, normalize.phone),
-    fn: hashed(user.firstName, normalize.name),
-    ln: hashed(user.lastName, normalize.name),
-    external_id: hashed(user.externalId, (v) => v.trim()),
-    country: hashed(user.country ?? "tr", (v) => v.trim().toLowerCase()),
+    // Meta's casing first (it matches what the browser sends), the Turkish one as a second candidate.
+    fn: hashed(user.firstName, normalize.name, normalize.nameTurkish),
+    ln: hashed(user.lastName, normalize.name, normalize.nameTurkish),
+    external_id: hashed(user.externalId, normalize.id),
+    country: hashed(user.country ?? countryFromPhone(user.phone), normalize.country),
     client_ip_address: user.ip || undefined,
     client_user_agent: user.userAgent || undefined,
     fbc: user.fbc || undefined,
@@ -101,15 +117,13 @@ export async function sendCapiEvent(event: CapiEvent): Promise<CapiResult> {
   };
 
   try {
-    const response = await fetch(
-      `https://graph.facebook.com/${GRAPH_VERSION}/${pixelId}/events?access_token=${encodeURIComponent(accessToken)}`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body),
-        signal: AbortSignal.timeout(8000),
-      },
-    );
+    // The token goes in a header, not the URL, so it never ends up in a logged address.
+    const response = await fetch(`https://graph.facebook.com/${GRAPH_VERSION}/${pixelId}/events`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${accessToken}` },
+      body: JSON.stringify(body),
+      signal: AbortSignal.timeout(8000),
+    });
     const json = (await response.json().catch(() => ({}))) as {
       events_received?: number;
       fbtrace_id?: string;
