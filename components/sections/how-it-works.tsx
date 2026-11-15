@@ -11,6 +11,7 @@ export function HowItWorks() {
         <h2 id="how-title" className="t-h2">
           {howItWorks.title}
         </h2>
+        <p className="t-lead measure mt-4">{howItWorks.lead}</p>
 
         <ol className="mt-10 grid grid-cols-3 gap-2.5 md:mt-12 md:grid-cols-6 md:gap-0">
           {howItWorks.steps.map((step, i) => (

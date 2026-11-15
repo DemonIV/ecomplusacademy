@@ -2,7 +2,14 @@ import { after } from "next/server";
 import { cookies } from "next/headers";
 import { checkBotId } from "botid/server";
 import { z } from "zod";
-import { QUESTIONS, isValidAnswer, type Answers, type QuestionId } from "@/config/qualification";
+import {
+  QUESTIONS,
+  currentOptionId,
+  isGender,
+  isValidAnswer,
+  type Answers,
+  type QuestionId,
+} from "@/config/qualification";
 import {
   buildFbc,
   COOKIE,
@@ -53,9 +60,14 @@ const touchSchema = z
 
 const bodySchema = z.object({
   answers: z.record(z.string(), z.string()),
-  fullName: z.string().trim().min(3).max(80),
+  firstName: z.string().trim().min(2).max(40).optional(),
+  lastName: z.string().trim().min(2).max(40).optional(),
+  /** Browser tabs opened before the name was split into two fields still send this one. */
+  fullName: z.string().trim().min(3).max(80).optional(),
   email: z.email().max(160),
   phone: z.string().trim().min(7).max(30),
+  /** One of GENDERS' ids. Required by the form; optional here for the same older tabs. */
+  gender: z.string().max(20).optional(),
   instagram: z.string().trim().max(80).optional(),
   kvkk: z.literal(true),
   marketing: z.boolean(),
@@ -65,8 +77,10 @@ const bodySchema = z.object({
   pageUrl: z.string().max(500).optional(),
 });
 
+const oneLine = (value: string) => value.replace(/\s+/g, " ").trim();
+
 function splitName(fullName: string): { first: string; last: string | null } {
-  const parts = fullName.replace(/\s+/g, " ").trim().split(" ");
+  const parts = oneLine(fullName).split(" ");
   if (parts.length === 1) return { first: parts[0], last: null };
   return { first: parts.slice(0, -1).join(" "), last: parts[parts.length - 1] };
 }
@@ -97,14 +111,27 @@ export async function POST(request: Request) {
 
   const answers = {} as Answers;
   for (const question of QUESTIONS) {
-    const value = body.answers[question.id];
+    const value = currentOptionId(question.id as QuestionId, body.answers[question.id]);
     if (!isValidAnswer(question.id as QuestionId, value)) return json({ error: "invalid", field: "answers" }, 422);
     answers[question.id] = value;
   }
 
+  // The form sends first and last name; one `fullName` only comes from an older tab.
+  const name =
+    body.firstName && body.lastName
+      ? { first: oneLine(body.firstName), last: oneLine(body.lastName) }
+      : body.fullName
+        ? splitName(body.fullName)
+        : null;
+  if (!name) return json({ error: "invalid", field: body.firstName ? "lastName" : "firstName" }, 422);
+  if (body.gender !== undefined && !isGender(body.gender)) return json({ error: "invalid", field: "gender" }, 422);
+  const fullName = name.last ? `${name.first} ${name.last}` : name.first;
+
   const phone = normalizePhone(body.phone);
   if (!phone) return json({ error: "invalid", field: "phone" }, 422);
   const email = body.email.trim().toLowerCase();
+  // Gender is kept with the answers (jsonb), so it needs no column of its own.
+  const storedAnswers: Record<string, string> = body.gender ? { ...answers, gender: body.gender } : answers;
 
   // Attribution: server cookies (consented) first, then the click data the
   // browser kept in sessionStorage before consent.
@@ -129,21 +156,20 @@ export async function POST(request: Request) {
     if (existing.status === "won") return json({ status: "known_customer" });
     const lockMs = QUALIFICATION_RULES.reapplyLockDays * 86_400_000;
     if (!existing.qualified && now - existing.last_applied_at.getTime() < lockMs) {
-      await bumpApplyCount(existing.id, answers);
+      await bumpApplyCount(existing.id, storedAnswers);
       return json({ status: "disqualified" });
     }
   }
 
   const result = qualify(answers);
-  const name = splitName(body.fullName);
   const data: LeadInsert = {
-    fullName: body.fullName.replace(/\s+/g, " ").trim(),
+    fullName,
     firstName: name.first,
     lastName: name.last,
     email,
     phone: phone.digits,
     instagram: instagramHandle(body.instagram),
-    answers,
+    answers: storedAnswers,
     score: result.score,
     tier: result.qualified ? result.tier : null,
     qualified: result.qualified,

@@ -2,7 +2,7 @@
 
 Here is the flow. A visitor arrives from a Meta ad, answers the qualification questions and leaves their contact details.
 
-- **Qualified applicants** pick a time straight away in the Calendly calendar embedded on the page. The call is on Zoom at the chosen time.
+- **Qualified applicants** pick a time straight away in the Calendly calendar embedded on the page. The call is on Google Meet at the chosen time.
 - **Applicants filtered out** are sent to free content: the "İlk 30 Gün Planı" PDF (once it exists) and Instagram.
 
 After the call, the team marks the outcome in the panel. A sale goes to Meta as a Purchase through the Conversions API.
@@ -33,13 +33,13 @@ Checks:
 
 | File | Contents |
 |---|---|
-| `content/brand.ts` | Brand name, founder, company legal name, contact details, Instagram |
-| `content/copy.ts` | All page copy: hero, promises, Onur's story and timeline, FAQ |
-| `content/media.ts` | Intro video (Vercel Blob URLs, upload steps in the file) and founder photos |
+| `content/brand.ts` | Brand name, head mentor, founder, company legal name, contact details, Instagram. The WhatsApp links stay hidden until `contact.whatsapp` is set; the footer shows the company line once `legalReady` is true |
+| `content/copy.ts` | All page copy: hero, head mentor and the team's numbers, promises, Onur's story, FAQ |
+| `content/media.ts` | Intro video (Vercel Blob URLs, upload steps in the file), mentor and founder photos |
 | `config/site.ts` | **Monthly**: cohort month and seat count; the /sonuc resources |
 | `content/legal.ts` | KVKK / privacy texts (must come from a lawyer) |
 | `content/whatsapp.ts` | Ready-made WhatsApp messages the team sends from the panel |
-| `config/qualification.ts` | Qualification questions, budget threshold, scoring |
+| `config/qualification.ts` | Qualification questions (budget in dollars) and the gender options of the contact step; the budget threshold and scoring are in `lib/qualification.ts` |
 | `config/booking.ts` | Calendly event link and embed colours |
 
 Placeholder values are marked `sample: true`. `npm run prelaunch` will not pass while any of them remain. The page itself never shows a "sample" badge.
@@ -50,8 +50,7 @@ Videos are not in the repo: they live in the Vercel Blob store `ecomplusacademy-
 
 1. **Event**: the site uses Onur's "Ecom Plus Academy | Ücretsiz Ön Görüşme (Onur)", since he takes every sales call for now. When more closers join, a team **Round Robin** event (Teams plan) can replace it.
    - 30 minutes.
-   - Location: **Zoom**. The host first connects their Zoom account under Calendly → Integrations → Zoom. Calendly then creates a separate Zoom meeting for every booking and puts the link in its e-mails. The panel shows the link with the booking.
-   - Description: "Görüşme Zoom'dan; bağlantı bu e-postada."
+   - Location: **Google Meet**. Calendly creates a separate meeting for every booking and puts the link in its e-mails. The panel shows the link with the booking.
    - Questions, in this order: 1 "Telefon numaran (WhatsApp)", 2 "Instagram kullanıcı adın". The site pre-fills both (`phoneAnswer`, `instagramAnswer` in `config/booking.ts`); a budget question after them is answered again in Calendly.
    - The name must contain "Ön Görüşme" so its bookings count as sales calls in Airtable. "(Instagram)" in an event's name marks its bookings as Kanal "Instagram DM".
 2. **Availability**:

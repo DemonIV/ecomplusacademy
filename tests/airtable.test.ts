@@ -35,7 +35,7 @@ const lead = (overrides: Partial<AirtableLead> = {}): AirtableLead => ({
   tier: "A",
   qualified: true,
   status: "qualified",
-  answers: { stage: "selling", budget: "25_50", readiness: "now", hours: "10_20" },
+  answers: { stage: "selling", budget: "500_1000", readiness: "now", hours: "10_20", gender: "female" },
   last_applied_at: new Date("2026-11-15T10:00:00.000Z"),
   first_touch: { ts: 1, utm_source: "facebook", utm_campaign: "Kasım", utm_term: "Set 1", utm_content: "Video 2" },
   last_touch: null,
@@ -55,9 +55,10 @@ const ctx = (reason: "applied" | "booking" | "outcome" | "retry") => ({ now: NOW
 const NOTE = [
   "Site başvurusu – 15.11.2026",
   "Durum: Satış yapıyorum",
-  "Bütçe (3 ay): ₺25.000 – ₺50.000",
+  "Bütçe (3 ay): 500 – 1.000 dolar",
   "Başlama: Hemen",
   "Haftalık süre: 10 – 20 saat",
+  "Cinsiyet: Kadın",
   `Panel: ${PANEL}`,
 ].join("\n");
 

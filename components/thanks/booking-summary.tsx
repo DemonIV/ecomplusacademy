@@ -16,7 +16,7 @@ export type StoredBooking = {
     end: string;
     hostName: string | null;
     location: string | null;
-    /** The Zoom link; Calendly creates it a few seconds after booking, so it can still be null. */
+    /** The meeting link (Google Meet); Calendly creates it a few seconds after booking, so it can still be null. */
     joinUrl?: string | null;
     rescheduleUrl: string | null;
     cancelUrl: string | null;
@@ -102,8 +102,9 @@ export function BookingSummary() {
   );
 }
 
-/** A confirmation message the lead sends us: people who confirm show up. */
+/** A confirmation message the lead sends us: people who confirm show up. Hidden until the WhatsApp line exists. */
 function ConfirmButton({ when, inline = false }: { when: string | null; inline?: boolean }) {
+  if (!BRAND.contact.whatsapp) return null;
   return (
     <a
       className={`btn btn-gold ${inline ? "btn-sm" : "mt-8"}`}

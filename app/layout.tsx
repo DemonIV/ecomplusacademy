@@ -27,7 +27,7 @@ export const metadata: Metadata = {
     template: `%s · ${BRAND.name}`,
   },
   description:
-    "Koç eşliğinde ilk ürününü bul, test et, satmaya başla: 3 haftalık ödevli eğitim, ürün bulma yazılımı, 09:00–21:00 WhatsApp desteği. 30 dakikalık ücretsiz görüşmede sana uygun mu birlikte bakalım.",
+    "Baş mentör Tarık Buğra Varol ve ekibiyle ilk ürününü bul, test et, satmaya başla: 3 haftalık ödevli eğitim, ürün bulma yazılımı, 09:00–21:00 WhatsApp desteği. 30 dakikalık ücretsiz görüşmede sana uygun mu birlikte bakalım.",
   openGraph: {
     type: "website",
     locale: "tr_TR",

@@ -36,6 +36,13 @@
   color-scheme: dark;
 }
 
+/* Phones: tighter sections, so the form is fewer thumb-scrolls away. */
+@media (max-width: 639px) {
+  :root {
+    --section-space: 4.25rem;
+  }
+}
+
 @theme inline {
   --color-night: var(--night);
   --color-deep: var(--deep);

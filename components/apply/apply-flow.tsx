@@ -13,7 +13,7 @@ import {
 } from "react";
 import { CalendlyEmbed, type ScheduledPayload } from "@/components/booking/calendly-embed";
 import type { StoredBooking } from "@/components/thanks/booking-summary";
-import { QUESTIONS, isValidAnswer, type Answers, type QuestionId } from "@/config/qualification";
+import { GENDERS, QUESTIONS, isGender, isValidAnswer, type Answers, type QuestionId } from "@/config/qualification";
 import { COPY } from "@/content/copy";
 import { BRAND } from "@/content/brand";
 import { MEDIA } from "@/content/media";
@@ -38,7 +38,8 @@ const CONTACT_STEP = QUESTION_COUNT;
 const CALENDAR_STEP = QUESTION_COUNT + 1;
 const NOTICE_STEP = QUESTION_COUNT + 2;
 
-type Contact = { fullName: string; phone: string; email: string; instagram: string };
+/** `gender` is one of GENDERS' ids, or "" until chosen. */
+type Contact = { firstName: string; lastName: string; phone: string; email: string; gender: string; instagram: string };
 type Qualified = {
   leadToken: string;
   leadId: string;
@@ -58,7 +59,7 @@ type Saved = {
 const INITIAL: Saved = {
   step: 0,
   answers: {},
-  contact: { fullName: "", phone: "", email: "", instagram: "" },
+  contact: { firstName: "", lastName: "", phone: "", email: "", gender: "", instagram: "" },
   startedAt: null,
 };
 
@@ -86,11 +87,35 @@ function splitName(fullName: string) {
   return { first: parts.slice(0, -1).join(" ") || parts[0], last: parts.length > 1 ? parts[parts.length - 1] : undefined };
 }
 
+const oneLine = (value: string) => value.replace(/\s+/g, " ").trim();
+
+/**
+ * A tab opened before the contact step changed holds one `fullName` field
+ * and no gender: carry the name over into the two fields, so nothing the
+ * visitor typed is lost.
+ */
+function withCurrentContact(saved: Saved | null): Saved | null {
+  if (!saved) return saved;
+  const stored: Partial<Contact> & { fullName?: string } = saved.contact ?? {};
+  const legacy = stored.fullName ? splitName(stored.fullName) : null;
+  return {
+    ...saved,
+    contact: {
+      firstName: stored.firstName ?? legacy?.first ?? "",
+      lastName: stored.lastName ?? legacy?.last ?? "",
+      phone: stored.phone ?? "",
+      email: stored.email ?? "",
+      gender: isGender(stored.gender) ? stored.gender : "",
+      instagram: stored.instagram ?? "",
+    },
+  };
+}
+
 export function ApplyFlow() {
   const router = useRouter();
   const hydrated = useSyncExternalStore(noopSubscribe, () => true, () => false);
   const restored = useMemo(
-    () => (hydrated ? withCurrentQuestions(readSession<Saved>(STORAGE_KEYS.apply)) : null),
+    () => (hydrated ? withCurrentQuestions(withCurrentContact(readSession<Saved>(STORAGE_KEYS.apply))) : null),
     [hydrated],
   );
   const [saved, setSaved] = useState<Saved | null>(null);
@@ -150,9 +175,12 @@ export function ApplyFlow() {
   const validate = (): FieldError => {
     const c = state.contact;
     const next: FieldError = {};
-    if (c.fullName.trim().split(/\s+/).filter(Boolean).length < 2) next.fullName = T.errors.fullName;
+    // Same order as the fields on screen: the first one with an error gets the focus.
+    if (oneLine(c.firstName).length < 2) next.firstName = T.errors.firstName;
+    if (oneLine(c.lastName).length < 2) next.lastName = T.errors.lastName;
     if (!normalizePhone(c.phone)) next.phone = T.errors.phone;
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(c.email.trim())) next.email = T.errors.email;
+    if (!isGender(c.gender)) next.gender = T.errors.gender;
     if (!kvkk) next.kvkk = T.errors.kvkk;
     return next;
   };
@@ -168,15 +196,19 @@ export function ApplyFlow() {
     }
     setSubmitting(true);
     const c = state.contact;
+    const firstName = oneLine(c.firstName);
+    const lastName = oneLine(c.lastName);
     try {
       const res = await fetch("/api/lead", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           answers: state.answers,
-          fullName: c.fullName.trim(),
+          firstName,
+          lastName,
           email: c.email.trim(),
           phone: c.phone.trim(),
+          gender: c.gender,
           instagram: c.instagram.trim() || undefined,
           kvkk: true,
           marketing,
@@ -200,13 +232,12 @@ export function ApplyFlow() {
         return;
       }
 
-      const name = splitName(c.fullName);
       const phone = normalizePhone(c.phone);
       setUserData({
         email: c.email,
         phone: phone?.digits,
-        firstName: name.first,
-        lastName: name.last,
+        firstName,
+        lastName,
         externalId: body.leadId,
       });
 
@@ -219,7 +250,7 @@ export function ApplyFlow() {
           qualified: {
             leadToken: body.leadToken,
             leadId: body.leadId,
-            firstName: body.firstName ?? name.first,
+            firstName: body.firstName ?? firstName,
             events: body.events,
           },
         });
@@ -276,7 +307,7 @@ export function ApplyFlow() {
   const calendlyPrefill = () => {
     const touch = readSession<Touch>(STORAGE_KEYS.touch);
     return {
-      name: state.contact.fullName.trim(),
+      name: oneLine(`${state.contact.firstName} ${state.contact.lastName}`),
       email: state.contact.email.trim(),
       phone: toE164(normalizePhone(state.contact.phone)?.digits),
       instagram: instagramHandle(state.contact.instagram),
@@ -375,15 +406,30 @@ export function ApplyFlow() {
           <h3 className="t-h3">{T.contactTitle}</h3>
           <p className="mt-2 text-muted">{T.contactLead}</p>
           <div className="mt-6 grid gap-4">
-            <Field
-              id="apply-fullName"
-              label={T.fields.fullName.label}
-              placeholder={T.fields.fullName.placeholder}
-              autoComplete="name"
-              value={state.contact.fullName}
-              onChange={(v) => setContact("fullName", v)}
-              error={errors.fullName}
-            />
+            <div className="grid grid-cols-2 gap-3">
+              <Field
+                id="apply-firstName"
+                label={T.fields.firstName.label}
+                placeholder={T.fields.firstName.placeholder}
+                autoComplete="given-name"
+                autoCapitalize="words"
+                enterKeyHint="next"
+                value={state.contact.firstName}
+                onChange={(v) => setContact("firstName", v)}
+                error={errors.firstName}
+              />
+              <Field
+                id="apply-lastName"
+                label={T.fields.lastName.label}
+                placeholder={T.fields.lastName.placeholder}
+                autoComplete="family-name"
+                autoCapitalize="words"
+                enterKeyHint="next"
+                value={state.contact.lastName}
+                onChange={(v) => setContact("lastName", v)}
+                error={errors.lastName}
+              />
+            </div>
             <Field
               id="apply-phone"
               label={T.fields.phone.label}
@@ -392,6 +438,7 @@ export function ApplyFlow() {
               autoComplete="tel"
               inputMode="tel"
               type="tel"
+              enterKeyHint="next"
               value={state.contact.phone}
               onChange={(v) => setContact("phone", v)}
               error={errors.phone}
@@ -403,16 +450,62 @@ export function ApplyFlow() {
               autoComplete="email"
               inputMode="email"
               type="email"
+              autoCapitalize="none"
+              spellCheck={false}
+              enterKeyHint="next"
               value={state.contact.email}
               onChange={(v) => setContact("email", v)}
               error={errors.email}
             />
+            <fieldset>
+              <legend className="mb-1.5 text-[0.92rem] font-semibold">{T.fields.gender.label}</legend>
+              <div
+                id="apply-gender"
+                tabIndex={-1}
+                role="radiogroup"
+                aria-label={T.fields.gender.label}
+                aria-invalid={errors.gender ? true : undefined}
+                aria-describedby={errors.gender ? "apply-gender-error" : undefined}
+                className="grid grid-cols-2 gap-3 rounded-[var(--radius-control)]"
+              >
+                {GENDERS.map((gender) => {
+                  const chosen = state.contact.gender === gender.id;
+                  return (
+                    <button
+                      key={gender.id}
+                      type="button"
+                      role="radio"
+                      aria-checked={chosen}
+                      onClick={() => setContact("gender", gender.id)}
+                      className={`flex min-h-[54px] items-center justify-center rounded-[var(--radius-control)] border px-4 font-semibold transition-[border-color,background-color,transform] duration-200 active:scale-[0.99] ${
+                        chosen
+                          ? "border-gold bg-gold/[0.12]"
+                          : errors.gender
+                            ? "border-danger bg-night/40"
+                            : "border-line-strong bg-night/40 hover:border-silver/50"
+                      }`}
+                    >
+                      {gender.label}
+                    </button>
+                  );
+                })}
+              </div>
+              {errors.gender && (
+                <p id="apply-gender-error" className="mt-1.5 text-sm text-danger">
+                  {errors.gender}
+                </p>
+              )}
+            </fieldset>
             <Field
               id="apply-instagram"
               label={T.fields.instagram.label}
               optional={T.fields.instagram.optional}
               placeholder={T.fields.instagram.placeholder}
               autoComplete="off"
+              autoCapitalize="none"
+              autoCorrect="off"
+              spellCheck={false}
+              enterKeyHint="done"
               value={state.contact.instagram}
               onChange={(v) => setContact("instagram", v)}
             />
@@ -481,7 +574,11 @@ export function ApplyFlow() {
             <CalendlyEmbed
               prefill={calendlyPrefill()}
               onScheduled={scheduled}
-              whatsappHref={whatsappLink(BRAND.contact.whatsapp, T.noSlotWhatsappText(state.qualified.firstName))}
+              whatsappHref={
+                BRAND.contact.whatsapp
+                  ? whatsappLink(BRAND.contact.whatsapp, T.noSlotWhatsappText(state.qualified.firstName))
+                  : null
+              }
             />
           </div>
         </div>
@@ -491,14 +588,11 @@ export function ApplyFlow() {
         <div>
           <h3 className="t-h3">{T.notices[state.notice].title}</h3>
           <p className="mt-3 text-muted">{T.notices[state.notice].text}</p>
-          <a
-            href={whatsappLink(BRAND.contact.whatsapp)}
-            target="_blank"
-            rel="noopener"
-            className="btn btn-ghost mt-6"
-          >
-            WhatsApp&apos;tan yaz
-          </a>
+          {BRAND.contact.whatsapp && (
+            <a href={whatsappLink(BRAND.contact.whatsapp)} target="_blank" rel="noopener" className="btn btn-ghost mt-6">
+              {T.whatsapp}
+            </a>
+          )}
         </div>
       )}
     </div>
