@@ -2,7 +2,7 @@
 
 Here is the flow. A visitor arrives from a Meta ad, answers the qualification questions and leaves their contact details.
 
-- **Qualified applicants** pick a time straight away in the Calendly calendar embedded on the page. The call is a WhatsApp call at the chosen time.
+- **Qualified applicants** pick a time straight away in the Calendly calendar embedded on the page. The call is on Zoom at the chosen time.
 - **Applicants filtered out** are sent to free content: the "İlk 30 Gün Planı" PDF (once it exists) and Instagram.
 
 After the call, the team marks the outcome in the panel. A sale goes to Meta as a Purchase through the Conversions API.
@@ -48,10 +48,12 @@ Videos are not in the repo: they live in the Vercel Blob store `ecomplusacademy-
 
 ## Calendly setup
 
-1. **Event** (Calendly → Event types → New → Team → **Round Robin**):
-   - 30 minutes. Hosts: everyone who takes calls. Round Robin needs a Teams plan.
-   - Location: **Zoom**. Each host first connects their own Zoom account under Calendly → Integrations → Zoom. Calendly then creates a separate Zoom meeting for every booking and puts the link in its e-mails. The panel shows the link with the booking.
+1. **Event**: the site uses Onur's "Ecom Plus Academy | Ücretsiz Ön Görüşme (Onur)", since he takes every sales call for now. When more closers join, a team **Round Robin** event (Teams plan) can replace it.
+   - 30 minutes.
+   - Location: **Zoom**. The host first connects their Zoom account under Calendly → Integrations → Zoom. Calendly then creates a separate Zoom meeting for every booking and puts the link in its e-mails. The panel shows the link with the booking.
    - Description: "Görüşme Zoom'dan; bağlantı bu e-postada."
+   - Questions, in this order: 1 "Telefon numaran (WhatsApp)", 2 "Instagram kullanıcı adın". The site pre-fills both (`phoneAnswer`, `instagramAnswer` in `config/booking.ts`); a budget question after them is answered again in Calendly.
+   - The name must contain "Ön Görüşme" so its bookings count as sales calls in Airtable. "(Instagram)" in an event's name marks its bookings as Kanal "Instagram DM".
 2. **Availability**:
    - Working hours
    - Buffer between calls
@@ -84,7 +86,7 @@ The team tracks every lead (Instagram DMs, WhatsApp, the site) in the Airtable b
 |---|---|
 | Qualified application | New row: Kanal "Site (Calendly)", Aşama "Yeni lead", İlgi from the tier (A Sıcak, B Ilık, C Soğuk), contact details, UTM Source and the Meta ad columns, fbclid/fbc/fbp. The answers go to Notlar with a link to the panel. |
 | Booking | Aşama "Randevu alındı", Randevu Tarihi, Satışçı (the host's first name; a new name is added to the options), Calendly Event ID |
-| Booking by someone who never applied | The same, with name, e-mail, phone and Instagram handle from the Calendly form. Kanal from `utm_source` (whatsapp → WhatsApp, instagram → Instagram DM, otherwise Site (Calendly)). |
+| Booking by someone who never applied | The same, with name, e-mail, phone and Instagram handle from the Calendly form. Kanal from `utm_source` (whatsapp → WhatsApp, instagram → Instagram DM), otherwise from the event name ("(Instagram)" → Instagram DM), otherwise Site (Calendly). |
 | Cancellation | Aşama "Randevu almadı"; Randevu Tarihi and Calendly Event ID cleared |
 | Outcome in the panel | "Görüşme yapıldı – takipte", "Görüşmeye gelmedi", "Satış" (with Satış Tutarı and Satış Tarihi) or "Satış değil" (with Kayıp Nedeni) |
 

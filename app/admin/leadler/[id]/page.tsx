@@ -150,10 +150,11 @@ export default async function LeadPage({ params }: PageProps<"/admin/leadler/[id
       name: lead.full_name,
       email: lead.email,
       phone: toE164(lead.phone),
+      instagram: lead.instagram,
       leadId: lead.id,
       utm: { utm_source: "whatsapp", utm_medium: "panel", utm_campaign: touch?.utm_campaign },
     },
-    { phoneAnswer: BOOKING.calendly.phoneAnswer },
+    { phoneAnswer: BOOKING.calendly.phoneAnswer, instagramAnswer: BOOKING.calendly.instagramAnswer },
   );
 
   return (

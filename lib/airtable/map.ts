@@ -110,10 +110,17 @@ export function lostReasonOption(reason: string | null | undefined): string | nu
   return AIRTABLE.lostReasons.find((option) => option.toLocaleLowerCase("tr-TR") === wanted) ?? null;
 }
 
-function sourceChannel(utmSource: string | null | undefined): string {
+/**
+ * "Kanal" of a booking without an application: the link's `utm_source`, else
+ * the event's name ("Ücretsiz Ön Görüşme (Instagram)" is the link sent in DMs).
+ */
+function bookingChannel(utmSource: string | null | undefined, eventName: string | null | undefined): string {
   const source = utmSource?.trim().toLowerCase() ?? "";
   if (/whatsapp|^wa$/.test(source)) return AIRTABLE.channels.whatsapp;
   if (/instagram|^ig$/.test(source)) return AIRTABLE.channels.instagram;
+  const name = eventName?.toLowerCase() ?? "";
+  if (name.includes("whatsapp")) return AIRTABLE.channels.whatsapp;
+  if (name.includes("instagram")) return AIRTABLE.channels.instagram;
   return AIRTABLE.channels.site;
 }
 
@@ -211,7 +218,7 @@ export function factsFromInvitee(invitee: CalendlyInvitee, event: CalendlyEvent,
     email: invitee.email?.trim().toLowerCase() || null,
     phone: phoneFromInvitee(invitee, event),
     instagram: instagramFromInvitee(invitee),
-    channel: sourceChannel(tracking.utm_source),
+    channel: bookingChannel(tracking.utm_source, event.name),
     interest: null,
     stage: cancelled ? AIRTABLE.stages.cancelled : AIRTABLE.stages.booked,
     call: cancelled

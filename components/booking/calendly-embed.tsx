@@ -63,7 +63,7 @@ export function CalendlyEmbed({
     return () => window.removeEventListener("message", onMessage);
   }, []);
 
-  const options = { phoneAnswer: BOOKING.calendly.phoneAnswer };
+  const options = { phoneAnswer: BOOKING.calendly.phoneAnswer, instagramAnswer: BOOKING.calendly.instagramAnswer };
   const src = domain
     ? calendlyUrl(BOOKING.calendly.url, prefill, { ...options, embed: { domain, colors: BOOKING.calendly.colors } })
     : null;

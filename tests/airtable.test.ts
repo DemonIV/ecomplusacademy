@@ -280,7 +280,10 @@ describe("Calendly bookings without an application", () => {
       [F.notes]: "Calendly randevusu – Ecom Plus Academy | Ücretsiz Ön Görüşme\nEklemek istediğin bir şey var mı?: Akşamları uygunum.",
       [F.lastContact]: "2026-11-14",
     });
-    expect(factsFromInvitee(invitee({ tracking: null }), event, NOW).channel).toBe("Site (Calendly)");
+    // Without utm_source the event's name tells the channel: the "(Instagram)" link goes out in DMs.
+    const named = (name: string) => factsFromInvitee(invitee({ tracking: null }), { ...event, name }, NOW).channel;
+    expect(named("Ecom Plus Academy | Ücretsiz Ön Görüşme (Instagram)")).toBe("Instagram DM");
+    expect(named("Ecom Plus Academy | Ücretsiz Ön Görüşme (Onur)")).toBe("Site (Calendly)");
   });
 
   it("update the team's DM row: stage, call and missing contact details, not the notes", () => {

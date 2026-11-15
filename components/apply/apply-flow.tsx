@@ -21,6 +21,7 @@ import { toE164 } from "@/lib/calendly/link";
 import { readSession, removeSession, STORAGE_KEYS, writeSession } from "@/lib/client/storage";
 import { setUserData, trackEvent } from "@/lib/meta/fbq";
 import { eventIds, META_EVENTS } from "@/lib/meta/events";
+import { instagramHandle } from "@/lib/instagram";
 import { normalizePhone, whatsappLink } from "@/lib/phone";
 import type { Touch } from "@/lib/attribution";
 
@@ -278,6 +279,7 @@ export function ApplyFlow() {
       name: state.contact.fullName.trim(),
       email: state.contact.email.trim(),
       phone: toE164(normalizePhone(state.contact.phone)?.digits),
+      instagram: instagramHandle(state.contact.instagram),
       leadId: state.qualified?.leadId,
       utm: {
         utm_source: touch?.utm_source,
