@@ -1,12 +1,15 @@
 import { describe, expect, it } from "vitest";
 import { qualify, scoreAnswers } from "@/lib/qualification";
 import {
+  BUDGET_DETAIL,
   QUESTIONS,
   answerLabel,
+  budgetAmountLabel,
   currentOptionId,
   genderLabel,
   isGender,
   isValidAnswer,
+  parseBudgetAmount,
   type Answers,
 } from "@/config/qualification";
 
@@ -32,6 +35,29 @@ describe("qualification", () => {
     expect(qualify({ ...strong, budget: "lt500" })).toMatchObject({ qualified: false, reason: "budget" });
     expect(qualify({ ...strong, budget: "500_1000" }).qualified).toBe(true);
     expect(qualify({ ...strong, budget: "gt1000" }).qualified).toBe(true);
+  });
+
+  it("lets the lowest budget option through from 400 dollars, by the exact amount", () => {
+    const low = { ...strong, budget: BUDGET_DETAIL.option };
+    expect(qualify(low, { budgetUsd: 400 }).qualified).toBe(true);
+    expect(qualify(low, { budgetUsd: 450 }).qualified).toBe(true);
+    expect(qualify(low, { budgetUsd: 399 })).toMatchObject({ qualified: false, reason: "budget" });
+    expect(qualify(low, { budgetUsd: 0 })).toMatchObject({ qualified: false, reason: "budget" });
+    expect(qualify(low, { budgetUsd: null })).toMatchObject({ qualified: false, reason: "budget" });
+    // The amount never lowers a higher option.
+    expect(qualify({ ...strong, budget: "500_1000" }, { budgetUsd: 10 }).qualified).toBe(true);
+  });
+
+  it("reads the typed amount as whole dollars", () => {
+    expect(parseBudgetAmount("450")).toBe(450);
+    expect(parseBudgetAmount(" 400 ")).toBe(400);
+    expect(parseBudgetAmount(425)).toBe(425);
+    expect(parseBudgetAmount("")).toBeNull();
+    expect(parseBudgetAmount("450$")).toBeNull();
+    expect(parseBudgetAmount("4,5")).toBeNull();
+    expect(parseBudgetAmount(undefined)).toBeNull();
+    expect(budgetAmountLabel({ budget_usd: "450" })).toBe("450 dolar");
+    expect(budgetAmountLabel({})).toBeNull();
   });
 
   it("asks the budget in dollars, in three steps", () => {

@@ -29,7 +29,7 @@ export const KVKK: LegalDoc = {
       heading: "İşlenen kişisel veriler",
       body: [
         "Kimlik ve iletişim: ad, soyad, cinsiyet, telefon numarası, e-posta adresi, isteğe bağlı Instagram kullanıcı adı.",
-        "Başvuru bilgileri: e-ticaret deneyimi, ayırabileceğiniz bütçe aralığı, başlama zamanı ve haftalık zaman tercihlerinize verdiğiniz cevaplar ile bunlardan hesaplanan uygunluk değerlendirmesi.",
+        "Başvuru bilgileri: e-ticaret deneyimi, ayırabileceğiniz bütçe aralığı (en düşük aralıkta yazdığınız tutar), başlama zamanı ve haftalık zaman tercihlerinize verdiğiniz cevaplar ile bunlardan hesaplanan uygunluk değerlendirmesi.",
         "Görüşme bilgileri: seçtiğiniz görüşme tarihi ve saati, görüşmenin sonucu ve görüşmeyi yapan ekip üyesinin notları.",
         "İşlem güvenliği: IP adresi, tarayıcı ve cihaz bilgisi, başvuru zamanı.",
         "Pazarlama ve ölçüm (yalnızca çerez onayınız veya açık rızanız olduğunda): reklam tıklama kimliği (fbclid), Meta çerez kimlikleri (_fbc, _fbp) ve sayfaya geliş kaynağı (UTM parametreleri).",

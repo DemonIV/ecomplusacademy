@@ -1,5 +1,5 @@
 import { AIRTABLE, type AirtableStageStatus } from "@/config/airtable";
-import { answerLabel, genderLabel, QUESTIONS, type QuestionId } from "@/config/qualification";
+import { answerLabel, budgetAmountLabel, genderLabel, QUESTIONS, type QuestionId } from "@/config/qualification";
 import { bookingStatusOf, instagramFromInvitee, phoneFromInvitee } from "@/lib/calendly/map";
 import type { CalendlyEvent, CalendlyInvitee } from "@/lib/calendly/types";
 import { formatPhone } from "@/lib/phone";
@@ -138,6 +138,8 @@ export function applicationNote(lead: Pick<AirtableLead, "answers" | "last_appli
     const answer = lead.answers[question.id];
     if (answer) lines.push(`${NOTE_LABELS[question.id] ?? question.title}: ${answerLabel(question.id, answer)}`);
   }
+  const exactBudget = budgetAmountLabel(lead.answers);
+  if (exactBudget) lines.push(`Tam bütçe: ${exactBudget}`);
   const gender = genderLabel(lead.answers.gender);
   if (gender) lines.push(`Cinsiyet: ${gender}`);
   if (panelUrl) lines.push(`Panel: ${panelUrl}`);

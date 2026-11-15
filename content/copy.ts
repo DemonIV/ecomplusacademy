@@ -40,13 +40,13 @@ export const COPY = {
   mentor: {
     /** Keep `value` short: it is set in the wide display face, two per row on phones. */
     stats: [
-      { value: "₺70M+", label: "e-ticaret cirosu" },
+      { value: "₺115M", label: "toplam ekip cirosu" },
       { value: "Yüzlerce", label: "başarılı öğrenci" },
       { value: "Haftada 3", label: "canlı yayın" },
       { value: "50+", label: "eğitim videosu" },
     ],
     eyebrow: "Baş mentörün",
-    lead: "Bugüne kadar yüzlerce başarılı öğrenci yetiştirdi; 70 milyon TL'nin üzerinde e-ticaret cirosu var. Eğitimi o yönetiyor: anlatıp bırakmıyoruz, işi seninle birlikte yapıyoruz.",
+    lead: "Bugüne kadar yüzlerce başarılı öğrenci yetiştirdi. Ekip olarak toplam 115 milyon TL e-ticaret cirosu yaptık. Eğitimi o yönetiyor: anlatıp bırakmıyoruz, işi seninle birlikte yapıyoruz.",
     pointsTitle: "Programda seninle birlikte:",
     points: [
       "Ürün listeni tarıyoruz",
@@ -122,16 +122,16 @@ export const COPY = {
 
   /**
    * The founder's story, in his own voice: why the academy exists. Only what
-   * Onur told us is here. Years, the kind of business that closed and how
-   * long the debt took are still missing; add them when he confirms them
-   * (real specifics are what make a story like this convincing).
+   * Onur told us is here (the clothing business from Merter, the debt paid
+   * off in the month his first product took off). The years are still
+   * missing; add them when he confirms them.
    */
   story: {
     eyebrow: "Kurucunun hikâyesi",
     title: "500 bin lira borçla başladım.",
     paragraphs: [
-      "Kurduğum iş battı; geriye yaklaşık 500 bin lira borç kaldı. Maaşla kapanacak bir rakam değildi.",
-      "E-ticarete o borçla başladım. Borcun tamamını e-ticaretten kazandığımla kapattım; düğünümü de kimseden borç almadan, kendi kazancımla yaptım.",
+      "Giyim sektörüne girdim; Merter'den ürün çekip satmaya çalışırken battım. Geriye yaklaşık 500 bin lira borç kaldı. Maaşla kapanacak bir rakam değildi.",
+      "E-ticarete o borçla başladım. İlk ürünümü tutturduğum ay borcun tamamını kapattım; düğünümü de kimseden borç almadan, kendi kazancımla yaptım.",
       "Beş yılda kendi mağazalarımda 50 milyon liranın üzerinde satış yaptım. Bu yolda en pahalı şeyin ürün ya da reklam olmadığını gördüm: yanlışı sana zamanında söyleyecek birinin olmaması.",
       "Ecom Plus Academy'yi bu yüzden kurduk. Eğitimi, yüzlerce öğrenci yetiştirmiş Tarık Buğra Varol yönetiyor; ben de her öğrencinin yanındayım.",
     ],
@@ -139,9 +139,9 @@ export const COPY = {
     quote: "Lamborghini değil, düğün parası.",
     /** Desktop only (the road). An empty `year` is not shown; fill it in when Onur confirms it. */
     milestones: [
-      { year: "", title: "Battım", text: "Kurduğum iş kapandı; geriye yaklaşık 500 bin lira borç kaldı." },
+      { year: "", title: "Battım", text: "Merter'den ürün çekip sattığım giyim işi battı; geriye yaklaşık 500 bin lira borç kaldı." },
       { year: "", title: "E-ticaret", text: "O borçla başladım." },
-      { year: "", title: "Borç kapandı", text: "Tamamını e-ticaretten kazandığımla ödedim." },
+      { year: "", title: "Borç kapandı", text: "İlk ürünümü tutturduğum ay tamamını ödedim." },
       { year: "", title: "Düğün", text: "Kimseden borç almadan, kendi kazancımla." },
       { year: "2025", title: "₺50M+ satış", text: "Kendi mağazalarımda geçilen eşik." },
       { year: "2026", title: "Ecom Plus Academy", text: "Baş mentör Tarık Buğra Varol; ben de her öğrencinin yanındayım." },
@@ -262,7 +262,7 @@ export const COPY = {
       },
       {
         q: "Mentörüm kim olacak?",
-        a: "Eğitimi baş mentör Tarık Buğra Varol yönetiyor: bugüne kadar yüzlerce başarılı öğrenci yetiştirdi, 70 milyon TL'nin üzerinde e-ticaret cirosu var. Kurucumuz Onur Yeşil de program boyunca öğrencilerin yanında.",
+        a: "Eğitimi baş mentör Tarık Buğra Varol yönetiyor; bugüne kadar yüzlerce başarılı öğrenci yetiştirdi. Ekibin toplam e-ticaret cirosu 115 milyon TL. Kurucumuz Onur Yeşil de program boyunca öğrencilerin yanında.",
       },
       {
         q: "Ücreti ne kadar?",

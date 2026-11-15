@@ -13,7 +13,16 @@ import {
 } from "react";
 import { CalendlyEmbed, type ScheduledPayload } from "@/components/booking/calendly-embed";
 import type { StoredBooking } from "@/components/thanks/booking-summary";
-import { GENDERS, QUESTIONS, isGender, isValidAnswer, type Answers, type QuestionId } from "@/config/qualification";
+import {
+  BUDGET_DETAIL,
+  GENDERS,
+  QUESTIONS,
+  isGender,
+  isValidAnswer,
+  parseBudgetAmount,
+  type Answers,
+  type QuestionId,
+} from "@/config/qualification";
 import { COPY } from "@/content/copy";
 import { BRAND } from "@/content/brand";
 import { MEDIA } from "@/content/media";
@@ -50,6 +59,8 @@ type NoticeKind = keyof typeof T.notices;
 type Saved = {
   step: number;
   answers: Partial<Answers>;
+  /** Digits typed after the lowest budget option (whole dollars). */
+  budgetAmount?: string;
   contact: Contact;
   startedAt: number | null;
   qualified?: Qualified;
@@ -63,7 +74,18 @@ const INITIAL: Saved = {
   startedAt: null,
 };
 
-type FieldError = Partial<Record<keyof Contact | "kvkk" | "form", string>>;
+type FieldError = Partial<Record<keyof Contact | "budgetAmount" | "kvkk" | "form", string>>;
+
+const BUDGET_STEP = QUESTIONS.findIndex((q) => q.id === BUDGET_DETAIL.question);
+
+/** The lowest budget option is chosen, so the exact amount is asked too. */
+const asksBudgetAmount = (answers: Partial<Answers>) => answers[BUDGET_DETAIL.question] === BUDGET_DETAIL.option;
+
+/** The typed amount, when it is a whole number of dollars inside the option's range. */
+function validBudgetAmount(value: string | undefined): number | null {
+  const amount = parseBudgetAmount(value);
+  return amount !== null && amount <= BUDGET_DETAIL.max ? amount : null;
+}
 
 const noopSubscribe = () => () => {};
 
@@ -80,6 +102,16 @@ function withCurrentQuestions(saved: Saved | null): Saved | null {
     QUESTIONS.filter((q) => isValidAnswer(q.id, saved.answers[q.id])).map((q) => [q.id, saved.answers[q.id]]),
   ) as Partial<Answers>;
   return { ...saved, answers, step: Math.min(saved.step, stale) };
+}
+
+/**
+ * Past the budget question with the lowest option but without its amount
+ * (a tab from before the amount was asked): back to that question.
+ */
+function withBudgetAmount(saved: Saved | null): Saved | null {
+  if (!saved || saved.qualified || saved.notice) return saved;
+  if (saved.step <= BUDGET_STEP || !asksBudgetAmount(saved.answers)) return saved;
+  return validBudgetAmount(saved.budgetAmount) === null ? { ...saved, step: BUDGET_STEP } : saved;
 }
 
 function splitName(fullName: string) {
@@ -115,7 +147,10 @@ export function ApplyFlow() {
   const router = useRouter();
   const hydrated = useSyncExternalStore(noopSubscribe, () => true, () => false);
   const restored = useMemo(
-    () => (hydrated ? withCurrentQuestions(withCurrentContact(readSession<Saved>(STORAGE_KEYS.apply))) : null),
+    () =>
+      hydrated
+        ? withBudgetAmount(withCurrentQuestions(withCurrentContact(readSession<Saved>(STORAGE_KEYS.apply))))
+        : null,
     [hydrated],
   );
   const [saved, setSaved] = useState<Saved | null>(null);
@@ -151,14 +186,36 @@ export function ApplyFlow() {
     setPicked(optionId);
     window.setTimeout(() => {
       setPicked(null);
+      const answers = { ...state.answers, [questionId]: optionId };
+      // The lowest budget option stays on this screen and asks for the exact amount.
+      const stays = questionId === BUDGET_DETAIL.question && asksBudgetAmount(answers);
+      setErrors({});
       update({
         ...state,
-        answers: { ...state.answers, [questionId]: optionId },
-        step: state.step + 1,
+        answers,
+        step: stays ? state.step : state.step + 1,
         startedAt: state.startedAt ?? Date.now(),
       });
-      focusPanel();
+      if (stays) requestAnimationFrame(() => document.getElementById("apply-budgetAmount")?.focus());
+      else focusPanel();
     }, 220);
+  };
+
+  const setBudgetAmount = (value: string) => {
+    update({ ...state, budgetAmount: value.replace(/\D/g, "").slice(0, 6) });
+    if (errors.budgetAmount) setErrors({ ...errors, budgetAmount: undefined });
+  };
+
+  const continueWithBudgetAmount = () => {
+    if (validBudgetAmount(state.budgetAmount) === null) {
+      const tooHigh = parseBudgetAmount(state.budgetAmount) !== null;
+      setErrors({ budgetAmount: tooHigh ? BUDGET_DETAIL.errors.tooHigh : BUDGET_DETAIL.errors.empty });
+      document.getElementById("apply-budgetAmount")?.focus();
+      return;
+    }
+    setErrors({});
+    update({ ...state, step: state.step + 1 });
+    focusPanel();
   };
 
   const back = () => {
@@ -209,6 +266,7 @@ export function ApplyFlow() {
           email: c.email.trim(),
           phone: c.phone.trim(),
           gender: c.gender,
+          budgetAmount: asksBudgetAmount(state.answers) ? (validBudgetAmount(state.budgetAmount) ?? undefined) : undefined,
           instagram: c.instagram.trim() || undefined,
           kvkk: true,
           marketing,
@@ -381,6 +439,30 @@ export function ApplyFlow() {
               );
             })}
           </div>
+          {question.id === BUDGET_DETAIL.question && !picked && asksBudgetAmount(state.answers) && (
+            <div className="mt-5 rounded-[var(--radius-control)] border border-line-strong bg-night/40 p-4">
+              <Field
+                id="apply-budgetAmount"
+                label={BUDGET_DETAIL.label}
+                hint={BUDGET_DETAIL.hint}
+                placeholder={BUDGET_DETAIL.placeholder}
+                inputMode="numeric"
+                autoComplete="off"
+                enterKeyHint="next"
+                value={state.budgetAmount ?? ""}
+                onChange={setBudgetAmount}
+                onKeyDown={(event) => {
+                  if (event.key !== "Enter") return;
+                  event.preventDefault();
+                  continueWithBudgetAmount();
+                }}
+                error={errors.budgetAmount}
+              />
+              <button type="button" className="btn btn-gold mt-4 w-full sm:w-auto" onClick={continueWithBudgetAmount}>
+                {BUDGET_DETAIL.next}
+              </button>
+            </div>
+          )}
           {question.note && (
             <p className="mt-4 flex items-start gap-3 rounded-[var(--radius-control)] border border-line bg-night/40 px-4 py-3 text-[0.92rem] leading-relaxed text-muted">
               <Image

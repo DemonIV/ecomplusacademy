@@ -11,11 +11,13 @@ import type { Answers, QuestionId } from "@/config/qualification";
 
 export const QUALIFICATION_RULES = {
   /**
-   * Budget answers that end the application (default: under 500 dollars,
-   * the same line as the earlier "under ₺25.000"). Empty the list to let
-   * everyone reach the calendar.
+   * Budget answers that end the application, unless the exact amount the
+   * applicant then types reaches `minBudgetUsd` (the "0 – 500 dolar" option
+   * asks for it). Empty the list to let everyone reach the calendar.
    */
   disqualifyingBudgets: ["lt500"] as string[],
+  /** Dollars. 400 and above still gets a call; below it, or no amount, does not. */
+  minBudgetUsd: 400,
   /**
    * Readiness answers that end the application. Empty on purpose: "Önce
    * bilgi almak istiyorum" is a cold visitor worth a call, it only ranks
@@ -57,11 +59,17 @@ export function scoreAnswers(answers: Answers): number {
   );
 }
 
-export function qualify(answers: Answers, options: { reapplyLocked?: boolean } = {}): QualificationResult {
+export function qualify(
+  answers: Answers,
+  options: { reapplyLocked?: boolean; budgetUsd?: number | null } = {},
+): QualificationResult {
   const score = scoreAnswers(answers);
   if (options.reapplyLocked) return { qualified: false, score, reason: "reapply_lock" };
   if ((QUALIFICATION_RULES.disqualifyingBudgets as readonly string[]).includes(answers.budget)) {
-    return { qualified: false, score, reason: "budget" };
+    const stated = options.budgetUsd;
+    if (typeof stated !== "number" || stated < QUALIFICATION_RULES.minBudgetUsd) {
+      return { qualified: false, score, reason: "budget" };
+    }
   }
   if ((QUALIFICATION_RULES.disqualifyingReadiness as readonly string[]).includes(answers.readiness)) {
     return { qualified: false, score, reason: "readiness" };

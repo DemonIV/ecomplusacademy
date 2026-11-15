@@ -3,6 +3,7 @@ import { cookies } from "next/headers";
 import { checkBotId } from "botid/server";
 import { z } from "zod";
 import {
+  BUDGET_DETAIL,
   QUESTIONS,
   currentOptionId,
   isGender,
@@ -68,6 +69,8 @@ const bodySchema = z.object({
   phone: z.string().trim().min(7).max(30),
   /** One of GENDERS' ids. Required by the form; optional here for the same older tabs. */
   gender: z.string().max(20).optional(),
+  /** Whole dollars, asked after the lowest budget option only. */
+  budgetAmount: z.number().int().min(0).max(999_999).optional(),
   instagram: z.string().trim().max(80).optional(),
   kvkk: z.literal(true),
   marketing: z.boolean(),
@@ -130,8 +133,12 @@ export async function POST(request: Request) {
   const phone = normalizePhone(body.phone);
   if (!phone) return json({ error: "invalid", field: "phone" }, 422);
   const email = body.email.trim().toLowerCase();
-  // Gender is kept with the answers (jsonb), so it needs no column of its own.
-  const storedAnswers: Record<string, string> = body.gender ? { ...answers, gender: body.gender } : answers;
+  // The exact amount counts only with the option that asks for it.
+  const budgetUsd = answers.budget === BUDGET_DETAIL.option ? (body.budgetAmount ?? null) : null;
+  // Gender and the exact budget are kept with the answers (jsonb), so they need no columns of their own.
+  const storedAnswers: Record<string, string> = { ...answers };
+  if (body.gender) storedAnswers.gender = body.gender;
+  if (budgetUsd !== null) storedAnswers[BUDGET_DETAIL.answerKey] = String(budgetUsd);
 
   // Attribution: server cookies (consented) first, then the click data the
   // browser kept in sessionStorage before consent.
@@ -161,7 +168,7 @@ export async function POST(request: Request) {
     }
   }
 
-  const result = qualify(answers);
+  const result = qualify(answers, { budgetUsd });
   const data: LeadInsert = {
     fullName,
     firstName: name.first,
