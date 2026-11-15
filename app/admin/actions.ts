@@ -279,7 +279,8 @@ export async function runCalendlySync(): Promise<ActionState> {
   if (report.skipped) return fail("CALENDLY_API_TOKEN tanımlı değil.");
   if (report.errors.length) return fail(`Eşitleme hatası: ${report.errors[0]}`);
   return done(
-    `${report.events} etkinlik tarandı, ${report.checked} kayıt okundu: ${report.matched} lead'le eşleşti, ${report.unmatched} eşleşmedi.`,
+    `${report.events} etkinlik tarandı, ${report.checked} kayıt okundu: ${report.matched} lead'le eşleşti, ${report.unmatched} eşleşmedi.` +
+      (report.airtable ? ` Başvurusu olmayan ${report.airtable} randevu Airtable'a yazıldı.` : ""),
   );
 }
 

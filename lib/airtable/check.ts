@@ -1,8 +1,8 @@
 import { AIRTABLE } from "@/config/airtable";
 
 /**
- * Compares the Airtable table with config/airtable.ts: a renamed column or a
- * stage option spelled differently would otherwise fail silently (writes to an
+ * Compares the Airtable table with config/airtable.ts: a renamed column or an
+ * option spelled differently would otherwise fail silently (writes to an
  * unknown field are rejected; an unknown option would be added as a new one).
  */
 
@@ -15,9 +15,10 @@ export function checkTable(table: TableShape): AirtableCheck {
   const missingFields = Object.values(AIRTABLE.fields).filter((name) => !byName.has(name));
 
   const expected: Array<[string, readonly string[]]> = [
-    [AIRTABLE.fields.channel, [AIRTABLE.channel]],
-    [AIRTABLE.fields.stage, [...new Set(Object.values(AIRTABLE.stages))]],
+    [AIRTABLE.fields.channel, Object.values(AIRTABLE.channels)],
+    [AIRTABLE.fields.stage, [...new Set([...Object.values(AIRTABLE.stages), ...AIRTABLE.decidedStages])]],
     [AIRTABLE.fields.interest, Object.values(AIRTABLE.interest)],
+    [AIRTABLE.fields.lostReason, AIRTABLE.lostReasons],
   ];
   const missingOptions: string[] = [];
   for (const [fieldName, values] of expected) {

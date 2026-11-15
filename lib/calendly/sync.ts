@@ -13,7 +13,7 @@ import {
 } from "@/lib/db/bookings";
 import { addActivity, findLeadByContact, getLead, setLeadStatus, type Lead, type LeadStatus } from "@/lib/db/leads";
 import { findMemberByEmail } from "@/lib/db/team";
-import { queueAirtableSync } from "@/lib/airtable/sync";
+import { queueAirtableSync, syncInviteeToAirtable } from "@/lib/airtable/sync";
 import { getEvent, getInvitee, listEvents, listInvitees } from "@/lib/calendly/api";
 import { bookingFields, leadRefFromInvitee } from "@/lib/calendly/map";
 import type { CalendlyEvent, CalendlyInvitee } from "@/lib/calendly/types";
@@ -24,8 +24,10 @@ import { eventIds, META_EVENTS } from "@/lib/meta/events";
 /**
  * Calendly → our database. Three entry points feed the same function:
  * the funnel (right after the embed reports a booking), the webhook
- * (real time, paid Calendly plans) and the hourly sync (safety net, also
+ * (real time, paid Calendly plans) and the daily sync (safety net, also
  * catches bookings made through a link the team sent over WhatsApp).
+ * Bookings of people who never applied are not ours to keep; their sales
+ * calls go straight to the team's Airtable (syncInviteeToAirtable).
  */
 
 /** A new upcoming call moves the lead to "booked" from these states. */
@@ -189,14 +191,24 @@ export async function refreshInvitee(inviteeUri: string): Promise<{ ok: boolean;
   return result.matched ? { ok: true } : { ok: false, error: "Lead eşleşmedi." };
 }
 
-export type SyncReport = { skipped?: string; events: number; checked: number; matched: number; unmatched: number; errors: string[] };
+export type SyncReport = {
+  skipped?: string;
+  events: number;
+  checked: number;
+  matched: number;
+  unmatched: number;
+  /** Airtable rows created or updated for bookings of people who never applied. */
+  airtable: number;
+  errors: string[];
+};
 
 /**
- * Hourly safety net: every event starting from 2 days ago to 60 days ahead;
+ * Daily safety net: every event starting from 2 days ago to 60 days ahead;
  * only new or changed ones (by Calendly's `updated_at`) are read in full.
+ * Events without an applicant are read every time; Airtable gets only differences.
  */
 export async function syncCalendly(now = new Date()): Promise<SyncReport> {
-  const report: SyncReport = { events: 0, checked: 0, matched: 0, unmatched: 0, errors: [] };
+  const report: SyncReport = { events: 0, checked: 0, matched: 0, unmatched: 0, airtable: 0, errors: [] };
   if (!integrations.calendly()) return { ...report, skipped: "not_configured" };
 
   const listed = await listEvents({ from: new Date(now.getTime() - 2 * 86_400_000), to: new Date(now.getTime() + 60 * 86_400_000) });
@@ -215,8 +227,18 @@ export async function syncCalendly(now = new Date()): Promise<SyncReport> {
     for (const invitee of invitees.data) {
       report.checked++;
       const result = await recordAndNotify(invitee, event, "sync");
-      if (result.matched) report.matched++;
-      else report.unmatched++;
+      if (result.matched) {
+        report.matched++;
+        continue;
+      }
+      report.unmatched++;
+      // One after another (not after()): Airtable bans bursts.
+      const written = await syncInviteeToAirtable(invitee, event, now);
+      if (!written.ok) {
+        if (written.error !== "not_configured") report.errors.push(`airtable ${invitee.uri}: ${written.error}`);
+      } else if (written.data && written.data.action !== "unchanged") {
+        report.airtable++;
+      }
     }
   }
 

@@ -1,4 +1,5 @@
 import type { BookingStatus, CalendlyEvent, CalendlyInvitee, CalendlyLocation } from "@/lib/calendly/types";
+import { instagramHandle } from "@/lib/instagram";
 import { normalizePhone } from "@/lib/phone";
 
 /**
@@ -23,6 +24,16 @@ export function phoneFromInvitee(invitee: CalendlyInvitee, event?: CalendlyEvent
   for (const candidate of candidates) {
     const phone = candidate ? normalizePhone(candidate) : null;
     if (phone) return phone.digits;
+  }
+  return null;
+}
+
+/** The answer to a question like "Instagram kullanıcı adın", if it is a usable handle. */
+export function instagramFromInvitee(invitee: Pick<CalendlyInvitee, "questions_and_answers">): string | null {
+  for (const qa of invitee.questions_and_answers ?? []) {
+    if (!/instagram/i.test(qa.question)) continue;
+    const handle = instagramHandle(qa.answer);
+    if (handle) return handle;
   }
   return null;
 }

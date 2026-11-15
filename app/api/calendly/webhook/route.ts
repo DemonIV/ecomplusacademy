@@ -1,4 +1,5 @@
 import { after } from "next/server";
+import { queueInviteeAirtableSync } from "@/lib/airtable/sync";
 import { recordInvitee, sendScheduleEvent } from "@/lib/calendly/sync";
 import { verifyCalendlySignature } from "@/lib/calendly/signature";
 import type { CalendlyEvent, CalendlyInvitee } from "@/lib/calendly/types";
@@ -7,7 +8,7 @@ import { errorJson, json } from "@/lib/http";
 
 /**
  * Calendly webhook (invitee.created / invitee.canceled), created from
- * /admin/durum. Paid Calendly plans only; on the free plan the hourly sync
+ * /admin/durum. Paid Calendly plans only; on the free plan the daily sync
  * does the same job. Every answer except a bad signature is 200, so
  * Calendly never retries events we deliberately ignore.
  */
@@ -40,10 +41,13 @@ export async function POST(request: Request) {
     return json({ ok: true, ignored: body.event ?? "unknown" });
   }
 
-  const result = await recordInvitee(invitee, invitee.scheduled_event ?? null, "webhook");
+  const event = invitee.scheduled_event ?? null;
+  const result = await recordInvitee(invitee, event, "webhook");
   if (result.matched && result.scheduleDue) {
     const lead = result.lead;
     after(() => sendScheduleEvent(lead, { eventTime: new Date(invitee.created_at) }));
   }
+  // Someone who never applied (a link sent over DM or WhatsApp): sales calls go to the team's Airtable.
+  if (!result.matched) queueInviteeAirtableSync(invitee, event);
   return json({ ok: true, matched: result.matched });
 }

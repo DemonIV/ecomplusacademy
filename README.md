@@ -69,25 +69,36 @@ Videos are not in the repo: they live in the Vercel Blob store `ecomplusacademy-
 
 How a booking reaches the panel:
 - **Funnel**: the embed reports the booking. The server reads the details with the API key and moves the lead to "booked".
-- **Link sent by the team over WhatsApp**: carries the lead id in the `salesforce_uuid` parameter. It arrives through the webhook, or through the hourly sync if there is no webhook.
+- **Link sent by the team over WhatsApp from the panel**: carries the lead id in the `salesforce_uuid` parameter. It arrives through the webhook, or through the daily sync if there is no webhook.
+- **Someone who never applied** (the plain Calendly link sent over a DM): not a lead in the panel; a sales call goes straight to Airtable (below).
 - **Cancel / reschedule**: done in Calendly; the panel updates itself.
 
 ## Airtable (sales team's table)
 
-The team tracks every lead (Instagram DMs, WhatsApp, the site) in the Airtable base "Ecom Plus Academy – Satış Takip", table "Leadler". The site writes its qualified applicants there:
+The team tracks every lead (Instagram DMs, WhatsApp, the site) in the Airtable base "Ecom Plus Academy – Satış Takip", table "Leadler". The site writes two kinds of rows there:
+
+1. **Qualified applicants**, kept in step with their booking and the panel's result.
+2. **Every sales call booked in Calendly**, also by people who never applied (the link went out over an Instagram DM or WhatsApp). Sales calls are the event types whose name contains "Ön Görüşme" (`config/airtable.ts` → `salesEvents`); "Eğitim Görüşmesi" and "30 Minute Meeting" stay out.
 
 | Event | Airtable row |
 |---|---|
-| Qualified application | New row: Kanal "Site (Calendly)", Aşama "Yeni lead", İlgi from the tier (A Sıcak, B Ilık, C Soğuk), contact details |
-| Booking (funnel, webhook or sync) | Aşama "Randevu alındı", Randevu Tarihi, Satışçı (the host's first name; a new name is added to the options) |
-| Cancellation | Aşama "Yeni lead", Randevu Tarihi cleared |
-| Outcome in the panel | "Görüşme yapıldı – takipte", "Görüşmeye gelmedi", "Satış" or "Satış değil" |
+| Qualified application | New row: Kanal "Site (Calendly)", Aşama "Yeni lead", İlgi from the tier (A Sıcak, B Ilık, C Soğuk), contact details, UTM Source and the Meta ad columns, fbclid/fbc/fbp. The answers go to Notlar with a link to the panel. |
+| Booking | Aşama "Randevu alındı", Randevu Tarihi, Satışçı (the host's first name; a new name is added to the options), Calendly Event ID |
+| Booking by someone who never applied | The same, with name, e-mail, phone and Instagram handle from the Calendly form. Kanal from `utm_source` (whatsapp → WhatsApp, instagram → Instagram DM, otherwise Site (Calendly)). |
+| Cancellation | Aşama "Randevu almadı"; Randevu Tarihi and Calendly Event ID cleared |
+| Outcome in the panel | "Görüşme yapıldı – takipte", "Görüşmeye gelmedi", "Satış" (with Satış Tutarı and Satış Tarihi) or "Satış değil" (with Kayıp Nedeni) |
 
-- A person the team already has (same e-mail, or same last 10 phone digits) is not duplicated: the site updates that row, fills in only empty contact fields and keeps the team's name, channel, interest and, for an application, stage.
-- Disqualified applicants are not written.
+- **One row per person.** A row with the same Calendly event, e-mail, last 10 phone digits or Instagram handle is updated instead of duplicated. Empty cells are filled; the team's name, channel and interest stay.
+- **The team decides after the call.** Bookings and applications do not move a row out of "Görüşme yapıldı – takipte", "Satış" or "Satış değil"; only a result entered in the panel does.
+- **Only differences are written**, so the daily sync re-reading the same bookings changes nothing. A row the team deleted is not recreated.
+- Disqualified applicants are not written, unless the team booked a call with them.
 - Sales still reach Meta only from the panel ("Sonucu gir"). A stage changed by hand in Airtable does not come back to the site.
-- Writes happen after the response. If Airtable is down, the daily sync re-sends qualified applicants of the last 3 days that never arrived.
-- Setup: `AIRTABLE_TOKEN` (scopes `data.records:read`, `data.records:write`, `schema.bases:read`, this base only) and `AIRTABLE_BASE_ID`. Column and option names live in `config/airtable.ts`; `/admin/durum` → "Airtable'ı test et" compares them with the table.
+- **Timing:**
+  - Applications and funnel bookings arrive within seconds.
+  - Bookings from links sent over DM or WhatsApp arrive within seconds through the Calendly webhook, otherwise with the daily sync.
+  - If Airtable is down, the daily sync re-sends qualified applicants of the last 3 days that never arrived.
+- **Meta ad links:** in Ads Manager → URL parameters, use `utm_source=facebook&utm_medium=paid&utm_campaign={{campaign.name}}&utm_term={{adset.name}}&utm_content={{ad.name}}`. This fills "Meta Kampanyası", "Meta Reklam Seti" and "Meta Reklamı".
+- **Setup:** `AIRTABLE_TOKEN` (scopes `data.records:read`, `data.records:write`, `schema.bases:read`, this base only) and `AIRTABLE_BASE_ID`. Column and option names live in `config/airtable.ts`; `/admin/durum` → "Airtable'ı test et" compares them with the table.
 
 ## Going live
 

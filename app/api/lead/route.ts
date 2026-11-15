@@ -12,6 +12,7 @@ import {
   type Touch,
 } from "@/lib/attribution";
 import { clientIp, errorJson, json, readJson, sameOrigin } from "@/lib/http";
+import { instagramHandle } from "@/lib/instagram";
 import { normalizePhone } from "@/lib/phone";
 import { qualify, QUALIFICATION_RULES } from "@/lib/qualification";
 import { rateLimit } from "@/lib/rate-limit";
@@ -68,16 +69,6 @@ function splitName(fullName: string): { first: string; last: string | null } {
   const parts = fullName.replace(/\s+/g, " ").trim().split(" ");
   if (parts.length === 1) return { first: parts[0], last: null };
   return { first: parts.slice(0, -1).join(" "), last: parts[parts.length - 1] };
-}
-
-function cleanInstagram(value?: string): string | null {
-  if (!value) return null;
-  const handle = value
-    .trim()
-    .replace(/^https?:\/\/(www\.)?instagram\.com\//i, "")
-    .replace(/^@/, "")
-    .replace(/[/?#].*$/, "");
-  return /^[A-Za-z0-9._]{1,30}$/.test(handle) ? handle : null;
 }
 
 export async function POST(request: Request) {
@@ -151,7 +142,7 @@ export async function POST(request: Request) {
     lastName: name.last,
     email,
     phone: phone.digits,
-    instagram: cleanInstagram(body.instagram),
+    instagram: instagramHandle(body.instagram),
     answers,
     score: result.score,
     tier: result.qualified ? result.tier : null,

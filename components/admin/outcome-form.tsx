@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { saveOutcome } from "@/app/admin/actions";
 import { ActionForm, SubmitButton } from "@/components/admin/action-form";
+import { AIRTABLE } from "@/config/airtable";
 
 const OPTIONS = [
   { id: "attended", label: "Görüşmeye geldi", hint: "Karar bekleniyor" },
@@ -59,8 +60,17 @@ export function OutcomeForm({ leadId, current, amount }: { leadId: string; curre
       )}
       {outcome === "lost" && (
         <label className="grid gap-1.5 text-sm font-semibold">
-          Neden? <span className="font-normal text-faint">isteğe bağlı</span>
-          <input className="field" name="reason" placeholder="Bütçe, zamanlama, düşünecek…" maxLength={300} />
+          <span>
+            Neden? <span className="font-normal text-faint">isteğe bağlı</span>
+          </span>
+          <select className="field min-h-[44px] py-2" name="reason" defaultValue="">
+            <option value="">Seçilmedi</option>
+            {AIRTABLE.lostReasons.map((reason) => (
+              <option key={reason} value={reason}>
+                {reason}
+              </option>
+            ))}
+          </select>
         </label>
       )}
       <div>
