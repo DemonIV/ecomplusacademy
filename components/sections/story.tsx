@@ -4,7 +4,7 @@ import { BRAND } from "@/content/brand";
 import { COPY } from "@/content/copy";
 import { MEDIA } from "@/content/media";
 
-/** Onur's story: the page's main proof while there are no student results yet. */
+/** The founder's story in his own voice: why the academy exists. The road (timeline) is desktop only. */
 export function Story() {
   const { story } = COPY;
   const [first, second, ...rest] = story.paragraphs;
@@ -13,9 +13,12 @@ export function Story() {
     <section className="section" aria-labelledby="story-title">
       <div className="shell">
         <div className="grid lg:grid-cols-[minmax(0,0.82fr)_minmax(0,1.18fr)] lg:items-start lg:gap-x-16">
-          <h2 id="story-title" className="t-h2 lg:col-start-2 lg:row-start-1">
-            {story.title}
-          </h2>
+          <div className="lg:col-start-2 lg:row-start-1">
+            <p className="text-sm font-bold text-gold">{story.eyebrow}</p>
+            <h2 id="story-title" className="t-h2 mt-3">
+              {story.title}
+            </h2>
+          </div>
           <figure className="relative mt-8 max-w-[28rem] overflow-hidden rounded-[var(--radius-card)] border border-line-strong bg-panel lg:col-start-1 lg:row-span-2 lg:row-start-1 lg:mt-0 lg:max-w-none">
             <Image
               src={portrait.src}
@@ -41,7 +44,10 @@ export function Story() {
           </div>
         </div>
 
-        <FounderTimeline milestones={story.milestones} />
+        {/* Phones skip the road: it repeats the paragraphs above and pushes the form a few screens down. */}
+        <div className="hidden lg:block">
+          <FounderTimeline milestones={story.milestones} />
+        </div>
       </div>
     </section>
   );

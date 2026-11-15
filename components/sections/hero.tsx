@@ -76,15 +76,18 @@ export function Hero() {
           </ul>
           <p className="mt-6 flex items-center gap-3 text-[0.95rem] leading-snug text-muted">
             <Image
-              src={MEDIA.founder.avatar.src}
+              src={MEDIA.mentor.avatar.src}
               alt=""
-              width={40}
-              height={40}
+              width={44}
+              height={44}
               loading="eager"
-              className="size-10 flex-none rounded-full border border-line-strong object-cover"
+              className="size-11 flex-none rounded-full border border-line-strong object-cover"
             />
             <span>
-              <span className="font-semibold text-paper">{BRAND.founder.name}</span> · {BRAND.founder.proof}
+              <span className="font-semibold text-paper">
+                {BRAND.mentor.name} · {BRAND.mentor.title}
+              </span>
+              <span className="block">{BRAND.mentor.proof}</span>
             </span>
           </p>
         </div>

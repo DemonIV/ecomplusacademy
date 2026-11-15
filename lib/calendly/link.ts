@@ -64,7 +64,7 @@ export function calendlyUrl(base: string, prefill: CalendlyPrefill, options: Cal
   }
   add("name", prefill.name, 120);
   add("email", prefill.email, 160);
-  // Custom questions are filled by position (a1…a10). The call happens on Zoom,
+  // Custom questions are filled by position (a1…a10). The call happens on Google Meet,
   // so the phone only goes to a question, never to the location.
   const answer = (key: string | null | undefined, value: string | null | undefined, max: number) => {
     if (key && /^a([1-9]|10)$/.test(key)) add(key, value, max);

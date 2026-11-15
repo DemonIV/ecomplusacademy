@@ -10,8 +10,12 @@ import type { Answers, QuestionId } from "@/config/qualification";
  */
 
 export const QUALIFICATION_RULES = {
-  /** Budget answers that end the application (default: under ₺25.000). */
-  disqualifyingBudgets: ["lt10", "10_25"],
+  /**
+   * Budget answers that end the application (default: under 500 dollars,
+   * the same line as the earlier "under ₺25.000"). Empty the list to let
+   * everyone reach the calendar.
+   */
+  disqualifyingBudgets: ["lt500"] as string[],
   /**
    * Readiness answers that end the application. Empty on purpose: "Önce
    * bilgi almak istiyorum" is a cold visitor worth a call, it only ranks
@@ -34,7 +38,7 @@ export const QUALIFICATION_RULES = {
 
 const SCORES: Record<QuestionId, Record<string, number>> = {
   stage: { none: 10, tried: 15, selling: 25, established: 30 },
-  budget: { lt10: 0, "10_25": 5, "25_50": 20, "50_100": 30, gt100: 40 },
+  budget: { lt500: 0, "500_1000": 20, gt1000: 40 },
   readiness: { now: 20, this_month: 12, info_first: 0 },
   hours: { lt5: 0, "5_10": 5, "10_20": 10, gt20: 10 },
 };

@@ -6,7 +6,6 @@ import { BookingSummary } from "@/components/thanks/booking-summary";
 import { BRAND } from "@/content/brand";
 import { COPY } from "@/content/copy";
 import { MEDIA } from "@/content/media";
-import { COHORT } from "@/config/site";
 import { whatsappLink } from "@/lib/phone";
 
 export const metadata: Metadata = {
@@ -15,7 +14,7 @@ export const metadata: Metadata = {
 };
 
 export default function ThanksPage() {
-  const { thanks, coach } = COPY;
+  const { thanks } = COPY;
   const video = MEDIA.preCall;
   return (
     <>
@@ -55,16 +54,16 @@ export default function ThanksPage() {
             <div>
               <figure className="flex items-center gap-4 rounded-[var(--radius-card)] border border-line-strong bg-panel/60 p-5">
                 <Image
-                  src={MEDIA.founder.avatar.src}
+                  src={MEDIA.mentor.avatar.src}
                   alt=""
                   width={56}
                   height={56}
                   className="size-14 flex-none rounded-2xl border border-line-strong object-cover"
                 />
                 <div>
-                  <p className="font-display text-[1.1rem] font-medium leading-snug">{coach.title(COHORT.month)}</p>
+                  <p className="font-display text-[1.1rem] font-medium leading-snug">{thanks.mentorCard}</p>
                   <figcaption className="mt-1 text-sm text-muted">
-                    {BRAND.founder.name} · {BRAND.founder.title}
+                    {BRAND.mentor.title} · {BRAND.mentor.proof}
                   </figcaption>
                 </div>
               </figure>
@@ -80,14 +79,16 @@ export default function ThanksPage() {
                   </li>
                 ))}
               </ol>
-              <a
-                className="btn btn-ghost mt-8"
-                target="_blank"
-                rel="noopener"
-                href={whatsappLink(BRAND.contact.whatsapp, thanks.whatsappText)}
-              >
-                {thanks.whatsapp}
-              </a>
+              {BRAND.contact.whatsapp && (
+                <a
+                  className="btn btn-ghost mt-8"
+                  target="_blank"
+                  rel="noopener"
+                  href={whatsappLink(BRAND.contact.whatsapp, thanks.whatsappText)}
+                >
+                  {thanks.whatsapp}
+                </a>
+              )}
             </div>
           </div>
         </div>

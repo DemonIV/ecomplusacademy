@@ -31,7 +31,8 @@ export function CalendlyEmbed({
 }: {
   prefill: CalendlyPrefill;
   onScheduled: (payload: ScheduledPayload) => void;
-  whatsappHref: string;
+  /** null while the team has no WhatsApp line: the "no slot" link is left out. */
+  whatsappHref: string | null;
 }) {
   const domain = useSyncExternalStore(noopSubscribe, () => window.location.host, () => "");
   const [loaded, setLoaded] = useState(false);
@@ -105,9 +106,11 @@ export function CalendlyEmbed({
         <a className="underline underline-offset-4 hover:text-paper" href={directHref} target="_blank" rel="noopener noreferrer">
           {T.openDirect}
         </a>
-        <a className="underline underline-offset-4 hover:text-paper" href={whatsappHref} target="_blank" rel="noopener">
-          {T.noSlot}
-        </a>
+        {whatsappHref && (
+          <a className="underline underline-offset-4 hover:text-paper" href={whatsappHref} target="_blank" rel="noopener">
+            {T.noSlot}
+          </a>
+        )}
       </p>
     </div>
   );
