@@ -129,3 +129,36 @@ export function isGender(value: unknown): value is GenderId {
 export function genderLabel(value: unknown): string | null {
   return GENDERS.find((g) => g.id === value)?.label ?? null;
 }
+
+/**
+ * Follow-up to the lowest budget option: the exact amount, typed in dollars.
+ * Whether it is enough for a call is decided on the server
+ * (lib/qualification.ts → `minBudgetUsd`), never in the browser. The amount
+ * is stored next to the answers (`answers.budget_usd`), like the gender.
+ */
+export const BUDGET_DETAIL = {
+  question: "budget",
+  option: "lt500",
+  answerKey: "budget_usd",
+  label: "Tam olarak ne kadar ayırabilirsin?",
+  hint: "Dolar olarak yaz, örn. 450.",
+  placeholder: "450",
+  /** The option's own upper bound; a larger amount belongs to the next option. */
+  max: 500,
+  next: "Devam",
+  errors: {
+    empty: "Tutarı dolar olarak yaz (örn. 450).",
+    tooHigh: "500 dolardan fazlaysa yukarıdan bir üst seçeneği seç.",
+  },
+} as const;
+
+/** "450" or 450 → 450; anything that is not a whole number of dollars → null. */
+export function parseBudgetAmount(value: unknown): number | null {
+  const text = typeof value === "number" ? String(value) : typeof value === "string" ? value.trim() : "";
+  return /^\d{1,6}$/.test(text) ? Number(text) : null;
+}
+
+export function budgetAmountLabel(answers: Record<string, string | undefined>): string | null {
+  const amount = parseBudgetAmount(answers[BUDGET_DETAIL.answerKey]);
+  return amount === null ? null : `${amount} dolar`;
+}

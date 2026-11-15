@@ -21,7 +21,7 @@ export const BRAND = {
     name: "Tarık Buğra Varol",
     title: "Baş Mentör",
     /** Hero line under the call to action; also the thank-you page. */
-    proof: "yüzlerce öğrenci, ₺70M+ e-ticaret cirosu",
+    proof: "yüzlerce başarılı öğrenci, ₺115M ekip cirosu",
   },
   /** Founder: the face of the academy, takes the free calls and stays with the students. */
   founder: {

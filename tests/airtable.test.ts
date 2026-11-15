@@ -129,6 +129,13 @@ describe("site applicants", () => {
     });
   });
 
+  it("note the exact budget typed after the lowest option", () => {
+    const low = lead({ answers: { stage: "none", budget: "lt500", budget_usd: "450", readiness: "now", hours: "5_10" } });
+    const note = factsFromLead(low, null, ctx("applied")).note;
+    expect(note).toContain("Bütçe (3 ay): 0 – 500 dolar");
+    expect(note).toContain("Tam bütçe: 450 dolar");
+  });
+
   it("carry the call once booked", () => {
     const fields = newRowFields(factsFromLead(lead({ status: "booked", tier: "C", instagram: null }), booking, ctx("booking")));
     expect(fields).toMatchObject({
