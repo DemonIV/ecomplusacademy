@@ -290,4 +290,37 @@ export const COPY = {
   },
 
   stickyCta: "30 dk ücretsiz görüşme",
+
+  /** /kaynaklar: where the Instagram videos send people instead of the DMs (entries in content/resources.ts). */
+  resources: {
+    metaTitle: "Ücretsiz kaynaklar",
+    metaDescription:
+      "Instagram videolarında bahsettiğim listeler ve rehberler. Videodaki kelimeyi yaz, kaynağı hemen al.",
+    bio: ["Videolarda “yoruma yaz” dediğim her şey burada.", "Kelimeyi yaz, kaynağı hemen al. DM beklemene gerek yok."],
+    stats: (count: number) => [
+      { value: String(count), label: "kaynak" },
+      { value: "Ücretsiz", label: "hepsi" },
+      { value: "Anında", label: "DM yok" },
+    ],
+    search: {
+      label: "Videoda söylediğim kelimeyi yaz",
+      placeholder: "ör. ÜRÜN",
+      submit: "Getir",
+      noMatch: "Bu kelimeyle bir kaynak bulamadım. Aşağıdakilerden birini seçebilirsin.",
+    },
+    applyCta: "Görüşmeye başvur",
+    instagramCta: "Instagram",
+    gridLabel: "Kaynaklar",
+    pinned: { title: "Bana uygun mu?", text: "4 soru · 1 dakika" },
+    back: "Tüm kaynaklar",
+    watchReel: "Videoyu Instagram'da izle",
+    download: "İndir",
+    open: "Aç",
+    more: "Diğer kaynaklar",
+    cta: {
+      title: "Bunu tek başına deneyebilirsin. Ya da koçunla birlikte, adım adım yaparsın.",
+      text: "4 kısa soruya cevap ver. Programa uygunsan 30 dakikalık ücretsiz görüşme için saatini hemen seç; değilse bunu açıkça söyleriz.",
+      button: "Uygun muyum, öğren",
+    },
+  },
 } as const;

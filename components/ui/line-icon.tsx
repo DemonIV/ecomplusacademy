@@ -81,6 +81,32 @@ const PATHS: Record<string, ReactNode> = {
     </>
   ),
   check: <path d="m5 12.5 4.5 4.5L19 7.5" />,
+  // /kaynaklar
+  pin: (
+    <>
+      <path d="M9 3.5h6l-1 6 3.5 3.5h-11L10 9.5Z" />
+      <path d="M12 13v7.5" />
+    </>
+  ),
+  download: (
+    <>
+      <path d="M12 4v11M7.5 10.5 12 15l4.5-4.5" />
+      <path d="M5 19.5h14" />
+    </>
+  ),
+  external: (
+    <>
+      <path d="M10 5H6.5A2.5 2.5 0 0 0 4 7.5v10A2.5 2.5 0 0 0 6.5 20h10a2.5 2.5 0 0 0 2.5-2.5V14" />
+      <path d="M14 4h6v6M20 4l-9 9" />
+    </>
+  ),
+  back: <path d="M19 12H5m6-6-6 6 6 6" />,
+  grid: (
+    <>
+      <rect x="4" y="4" width="16" height="16" rx="2" />
+      <path d="M9.3 4v16M14.7 4v16M4 9.3h16M4 14.7h16" />
+    </>
+  ),
 };
 
 export function LineIcon({ id, className = "size-6" }: { id: string; className?: string }) {

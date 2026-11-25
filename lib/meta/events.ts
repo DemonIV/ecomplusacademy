@@ -7,6 +7,9 @@
  * |----------------------|--------------------|----------------|---------------|
  * | Page view            | PageView           | pixel          | website       |
  * | VSL 25/50/75/95 %    | VideoProgress (+ViewContent at 50 %) | pixel | website |
+ * | /kaynaklar word typed | Search            | pixel          | website       |
+ * | Resource opened      | ViewContent (content_category "kaynak") | pixel | website |
+ * | Resource → apply CTA | ResourceCta        | pixel          | website       |
  * | First answer         | StartApplication   | pixel          | website       |
  * | Form submitted       | SubmitApplication  | pixel + CAPI   | website       |
  * | Qualified            | Lead (value)       | pixel + CAPI   | website       |
@@ -20,6 +23,8 @@ export const META_EVENTS = {
   pageView: "PageView",
   viewContent: "ViewContent",
   videoProgress: "VideoProgress",
+  search: "Search",
+  resourceCta: "ResourceCta",
   startApplication: "StartApplication",
   submitApplication: "SubmitApplication",
   lead: "Lead",
@@ -36,6 +41,7 @@ export type MetaEventName = (typeof META_EVENTS)[keyof typeof META_EVENTS];
 export const STANDARD_EVENTS = new Set<string>([
   "PageView",
   "ViewContent",
+  "Search",
   "Lead",
   "Schedule",
   "Purchase",
