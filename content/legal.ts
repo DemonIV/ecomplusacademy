@@ -15,7 +15,9 @@ export type LegalDoc = {
   sections: Array<{ heading: string; body: string[] }>;
 };
 
-const controller = `${BRAND.legalName} (${BRAND.contact.address}, MERSİS: ${BRAND.contact.mersis}, e-posta: ${BRAND.contact.email})`;
+const controller = BRAND.legalReady
+  ? `${BRAND.legalName} (${BRAND.contact.address}, MERSİS: ${BRAND.contact.mersis}, e-posta: ${BRAND.contact.email})`
+  : `${BRAND.name} (e-posta: ${BRAND.contact.email})`;
 
 export const KVKK: LegalDoc = {
   sample: true,
@@ -26,8 +28,8 @@ export const KVKK: LegalDoc = {
     {
       heading: "İşlenen kişisel veriler",
       body: [
-        "Kimlik ve iletişim: ad soyad, telefon numarası, e-posta adresi, isteğe bağlı Instagram kullanıcı adı.",
-        "Başvuru bilgileri: e-ticaret deneyimi, ayırabileceğiniz bütçe aralığı, başlama zamanı ve haftalık zaman tercihlerinize verdiğiniz cevaplar ile bunlardan hesaplanan uygunluk değerlendirmesi.",
+        "Kimlik ve iletişim: ad, soyad, cinsiyet, telefon numarası, e-posta adresi, isteğe bağlı Instagram kullanıcı adı.",
+        "Başvuru bilgileri: e-ticaret deneyimi, ayırabileceğiniz bütçe aralığı (en düşük aralıkta yazdığınız tutar), başlama zamanı ve haftalık zaman tercihlerinize verdiğiniz cevaplar ile bunlardan hesaplanan uygunluk değerlendirmesi.",
         "Görüşme bilgileri: seçtiğiniz görüşme tarihi ve saati, görüşmenin sonucu ve görüşmeyi yapan ekip üyesinin notları.",
         "İşlem güvenliği: IP adresi, tarayıcı ve cihaz bilgisi, başvuru zamanı.",
         "Pazarlama ve ölçüm (yalnızca çerez onayınız veya açık rızanız olduğunda): reklam tıklama kimliği (fbclid), Meta çerez kimlikleri (_fbc, _fbp) ve sayfaya geliş kaynağı (UTM parametreleri).",
@@ -45,7 +47,7 @@ export const KVKK: LegalDoc = {
     {
       heading: "Aktarılan taraflar",
       body: [
-        "Hizmetin sunulması için çalıştığımız tedarikçiler: barındırma (Vercel Inc.), veritabanı (Neon Inc., AB/Frankfurt sunucusu), görüşme randevusu ile onay ve hatırlatma e-postaları (Calendly LLC, ABD), görüşmenin yapıldığı Zoom (Zoom Communications, Inc., ABD), sizinle yazıştığımız WhatsApp (WhatsApp LLC / Meta Platforms), satış ekibinin başvuru takip tablosu (Airtable / Formagrid Inc., ABD), ekip içi bildirim e-postaları (Resend Inc.).",
+        "Hizmetin sunulması için çalıştığımız tedarikçiler: barındırma (Vercel Inc.), veritabanı (Neon Inc., AB/Frankfurt sunucusu), görüşme randevusu ile onay ve hatırlatma e-postaları (Calendly LLC, ABD), görüşmenin yapıldığı Google Meet (Google LLC, ABD), sizinle yazıştığımız WhatsApp (WhatsApp LLC / Meta Platforms), satış ekibinin başvuru takip tablosu (Airtable / Formagrid Inc., ABD), ekip içi bildirim e-postaları (Resend Inc.).",
         "Açık rızanız varsa reklam ölçümü için Meta Platforms Ireland Ltd.",
         "Bu tedarikçilerin bir kısmı verileri yurt dışındaki sunucularda işler. Yurt dışına aktarım KVKK m. 9 kapsamındaki şartlara uygun olarak yapılır.",
       ],

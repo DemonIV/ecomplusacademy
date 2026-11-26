@@ -4,19 +4,21 @@
  * lists them. Nothing on the page shows a "sample" badge.
  *
  * Meta ad policy and the brief: no income guarantees, no "ayda X kazandım",
- * "pasif gelir" or "3 ayda zengin". The proof is the founder's own story.
- * The month name comes from config/site.ts (`COHORT.month`).
+ * "pasif gelir" or "3 ayda zengin". The proof is the team's track record
+ * (head mentor Tarık Buğra Varol) and the founder's own story; every figure
+ * here is one the team stated, none is rounded up.
+ * The month name and seat count come from config/site.ts (`COHORT`).
  */
 
 export const COPY = {
   nav: { cta: "Görüşme planla" },
 
   hero: {
-    /** One sentence per line. */
-    title: ["Battım.", "E-ticaretle ayağa kalktım.", "Aynı yolu seninle yürüyeyim."],
-    lead: "Koç eşliğinde ilk ürününü buluyor, test ediyor, satmaya başlıyorsun. 30 dakikalık ücretsiz görüşmede sana uygun mu, birlikte bakalım.",
+    /** One clause per line; the last one is gold. */
+    title: ["E-ticarete", "tek başına değil,", "mentörünle başla."],
+    lead: "Baş mentör Tarık Buğra Varol ve ekibiyle ilk ürününü buluyor, test ediyor, satmaya başlıyorsun. Sana uygun mu, 30 dakikalık ücretsiz görüşmede birlikte bakalım.",
     cta: "30 dk ücretsiz görüşme planla",
-    trust: ["Başarana kadar destek", "Birebir koç", "09:00–21:00 WhatsApp & Zoom"],
+    trust: ["Başarana kadar destek", "Birebir mentör", "09:00–21:00 WhatsApp"],
     /** Illustration on the globe: stocked in Türkiye, dropshipping abroad. */
     orderCards: [
       { city: "İzmir", product: "Seramik kahve seti", status: "Yeni sipariş" },
@@ -27,16 +29,44 @@ export const COPY = {
 
   vsl: {
     caption:
-      "Önce bu 2,5 dakikalık videoyu izle: programın nasıl işlediğini ve ücretsiz görüşmede neye birlikte bakacağımızı anlatıyorum.",
+      "Önce bu 2,5 dakikalık videoyu izle: kurucumuz Onur Yeşil programın nasıl işlediğini ve ücretsiz görüşmede neye baktığımızı anlatıyor.",
     unmute: "Sesi aç",
     restart: "Baştan izle",
     play: "Videoyu oynat",
     ended: "Sana uygun olup olmadığını 30 dakikalık ücretsiz görüşmede birlikte netleştirelim.",
   },
 
+  /** Head mentor, the numbers behind the team, the founder and the month's seats. */
+  mentor: {
+    /** Keep `value` short: it is set in the wide display face, two per row on phones. */
+    stats: [
+      { value: "₺115M", label: "toplam ekip cirosu" },
+      { value: "Yüzlerce", label: "başarılı öğrenci" },
+      { value: "Haftada 3", label: "canlı yayın" },
+      { value: "50+", label: "eğitim videosu" },
+    ],
+    eyebrow: "Baş mentörün",
+    lead: "Bugüne kadar yüzlerce başarılı öğrenci yetiştirdi. Ekip olarak toplam 115 milyon TL e-ticaret cirosu yaptık. Eğitimi o yönetiyor: anlatıp bırakmıyoruz, işi seninle birlikte yapıyoruz.",
+    pointsTitle: "Programda seninle birlikte:",
+    points: [
+      "Ürün listeni tarıyoruz",
+      "İlk testini kuruyoruz",
+      "Reklam sonuçlarını okuyoruz",
+      "İlk ürünün tutana kadar devam ediyoruz",
+    ],
+    founderText:
+      "5 yıldır e-ticarette; kendi mağazalarında 50 milyon TL'nin üzerinde satış yaptı. Ücretsiz görüşmede seni Onur karşılıyor, program boyunca da yanında.",
+    /** No-break space keeps "20 kişi" together when the line wraps. */
+    capacity: (month: string, seats: number) => `${month} dönemi: ${seats} kişi`,
+    capacityText: (seats: number) =>
+      `Her öğrenciye birebir zaman ayırıyoruz; bu yüzden ayda en fazla ${seats} kişi alıyoruz.`,
+    left: (left: number, seats: number) => `${seats} kişilik dönemde ${left} yer kaldı`,
+    cta: "30 dk ücretsiz görüşme planla",
+  },
+
   promises: {
     title: "Neden burada farklı?",
-    lead: "Video teoridir, mağaza pratikle kurulur.",
+    lead: "Eğitim videosu her yerde var. Video teoridir; mağaza bir mentörle yan yana kurulur.",
     items: [
       {
         id: "support",
@@ -46,56 +76,35 @@ export const COPY = {
       {
         id: "mentor",
         title: "Birebir mentörlük",
-        text: "İlk gün sana bir koç atanıyor. Listeyi birlikte tarıyor, testi birlikte kuruyor, sonucu birlikte okuyorsunuz.",
+        text: "İlk gün sana bir mentör atanıyor. Listeyi birlikte tarıyor, testi birlikte kuruyor, sonucu birlikte okuyorsunuz.",
       },
       {
         id: "chat",
-        title: "09:00–21:00 WhatsApp & Zoom",
-        text: "Takıldığın an yaz; gerektiğinde Zoom'da ekranı açıp birlikte çözüyoruz.",
+        title: "09:00–21:00 WhatsApp desteği",
+        text: "Takıldığın an yaz; gerektiğinde görüntülü görüşmede ekranı açıp birlikte çözüyoruz.",
       },
       {
         id: "homework",
         title: "3 haftalık ödevli eğitim",
-        text: "Video izleyip geçmek yok. Her hafta ödev, her ödev koç kontrolünden geçiyor.",
+        text: "Video izleyip geçmek yok. Her hafta ödev, her ödev mentör kontrolünden geçiyor.",
       },
       {
         id: "software",
         title: "Ürün bulma yazılımı",
-        text: "Ürünü tahminle değil yazılımla buluyorsun; koç nasıl kullanılacağını gösteriyor.",
+        text: "Ürünü tahminle değil yazılımla buluyorsun; mentörün nasıl kullanılacağını gösteriyor.",
       },
       {
         id: "lifetime",
         title: "Ömür boyu erişim",
-        text: "Discord topluluğu ve video eğitim paneli ömür boyu açık.",
+        text: "Discord topluluğu ve 50'den fazla videoluk eğitim paneli ömür boyu açık.",
       },
     ],
     footnote: "Türkiye'de stoklu, yurt dışında dropshipping: ikisi de eğitimin içinde.",
   },
 
-  story: {
-    /** Onur still has to fill in the years and the type of the business that closed. */
-    sample: true,
-    title: "500 bin lira borçla başladım.",
-    paragraphs: [
-      "Bundan 6 yıl önce bir iş kurdum ve battım. Geriye yaklaşık 500 bin lira borç kaldı. Maaşla ödesem yıllar sürecekti; ben de herkes gibi “ek gelir” aramaya başladım.",
-      "O dönemde e-ticaretle tanıştım. Tek ürün, küçük bir reklam bütçesi, bol deneme yanılma. 3 ay içinde borcumun tamamını kapattım. Sonra düğünümü yaptım; kimseden borç almadan, e-ticaretten kazandığım parayla.",
-      "Beş yılda kendi mağazalarımda 50 milyon liranın üzerinde satış yaptım. Bu sürede çevremdeki herkesin aynı yerde takıldığını gördüm: video izliyorlar, ama sabah kalkınca ne yapacaklarını bilmiyorlar. Ecom Plus Academy'yi bunun için kurdum: video teoridir, mağaza bir koçla yan yana kurulur.",
-    ],
-    /** Pull quote, shown after the second paragraph. */
-    quote: "Lamborghini değil, düğün parası.",
-    /** An empty `year` is not shown; fill it in when Onur confirms it. */
-    milestones: [
-      { year: "", title: "Battım", text: "Kurduğum iş kapandı; geriye 500 bin lira borç kaldı." },
-      { year: "", title: "İlk ürün", text: "E-ticaretle tanıştım. Tek ürün, küçük bütçe, ilk siparişler." },
-      { year: "", title: "Borç kapandı", text: "3 ay sonra. Son taksiti e-ticaret geliriyle ödedim." },
-      { year: "", title: "Düğün", text: "Kendi düğünümü kendi kazancımla yaptım." },
-      { year: "2025", title: "₺50M+ satış", text: "Kendi mağazalarımda geçilen eşik." },
-      { year: "2026", title: "Ecom Plus Academy", text: "İlk dönem. Koçluğu bizzat ben yapıyorum." },
-    ],
-  },
-
   howItWorks: {
     title: "Nasıl işliyor?",
+    lead: "Ürün seçiminden kargoya altı adım; her adımı mentörünle birlikte kuruyorsun.",
     steps: [
       { id: "product", label: "Ürün" },
       { id: "store", label: "Mağaza" },
@@ -111,27 +120,49 @@ export const COPY = {
     ],
   },
 
-  coach: {
-    title: (month: string) => `${month} döneminde koçun benim.`,
-    text: "İlk dönem küçük tutuluyor; her öğrenciyle bizzat ilgileniyorum.",
-    /** No-break space keeps "10 kişi" together when the line wraps. */
-    capacity: (month: string, seats: number) => `${month} dönemi: ${seats} kişi`,
-    capacityText: "Koçluğu bizzat ben yapıyorum, bu yüzden az kişi alıyorum.",
-    left: (left: number, seats: number) => `${seats} kişilik dönemde ${left} yer kaldı`,
-    cta: "30 dk ücretsiz görüşme planla",
+  /**
+   * The founder's story, in his own voice: why the academy exists. Only what
+   * Onur told us is here (the clothing business from Merter, the debt paid
+   * off in the month his first product took off). The years are still
+   * missing; add them when he confirms them.
+   */
+  story: {
+    eyebrow: "Kurucunun hikâyesi",
+    title: "500 bin lira borçla başladım.",
+    paragraphs: [
+      "Giyim sektörüne girdim; Merter'den ürün çekip satmaya çalışırken battım. Geriye yaklaşık 500 bin lira borç kaldı. Maaşla kapanacak bir rakam değildi.",
+      "E-ticarete o borçla başladım. İlk ürünümü tutturduğum ay borcun tamamını kapattım; düğünümü de kimseden borç almadan, kendi kazancımla yaptım.",
+      "Beş yılda kendi mağazalarımda 50 milyon liranın üzerinde satış yaptım. Bu yolda en pahalı şeyin ürün ya da reklam olmadığını gördüm: yanlışı sana zamanında söyleyecek birinin olmaması.",
+      "Ecom Plus Academy'yi bu yüzden kurduk. Eğitimi, yüzlerce öğrenci yetiştirmiş Tarık Buğra Varol yönetiyor; ben de her öğrencinin yanındayım.",
+    ],
+    /** Pull quote, shown after the second paragraph. */
+    quote: "Lamborghini değil, düğün parası.",
+    /** Desktop only (the road). An empty `year` is not shown; fill it in when Onur confirms it. */
+    milestones: [
+      { year: "", title: "Battım", text: "Merter'den ürün çekip sattığım giyim işi battı; geriye yaklaşık 500 bin lira borç kaldı." },
+      { year: "", title: "E-ticaret", text: "O borçla başladım." },
+      { year: "", title: "Borç kapandı", text: "İlk ürünümü tutturduğum ay tamamını ödedim." },
+      { year: "", title: "Düğün", text: "Kimseden borç almadan, kendi kazancımla." },
+      { year: "2025", title: "₺50M+ satış", text: "Kendi mağazalarımda geçilen eşik." },
+      { year: "2026", title: "Ecom Plus Academy", text: "Baş mentör Tarık Buğra Varol; ben de her öğrencinin yanındayım." },
+    ],
   },
 
   apply: {
     title: "Ücretsiz strateji görüşmeni planla",
+    /** Phones: one line instead of the three numbered steps, so the first question follows the title. */
+    mobileLead: "4 kısa soru, 1 dakika. Sonra takvimden sana uyan saati seçiyorsun.",
     steps: ["4 kısa soruyu yanıtla", "İletişim bilgilerini bırak", "Takvimden sana uyan saati seç"],
     promise: "Görüşme ücretsizdir ve satış baskısı yoktur. Sana uygun değilsek bunu açıkça söyleriz.",
     back: "Geri",
     contactTitle: "Sana nasıl ulaşalım?",
-    contactLead: "Görüşme Zoom'dan yapılır; bağlantı, onay ve hatırlatmalar e-postana gelir. Gerekirse WhatsApp'tan yazarız.",
+    contactLead: "Görüşme Google Meet'ten yapılır; bağlantı, onay ve hatırlatmalar e-postana gelir. Gerekirse WhatsApp'tan yazarız.",
     fields: {
-      fullName: { label: "Ad soyad", placeholder: "Adın ve soyadın" },
+      firstName: { label: "Ad", placeholder: "Adın" },
+      lastName: { label: "Soyad", placeholder: "Soyadın" },
       phone: { label: "WhatsApp numaran", placeholder: "05xx xxx xx xx", hint: "Yurt dışındaysan ülke koduyla yaz, örn. +49…" },
       email: { label: "E-posta", placeholder: "ornek@eposta.com" },
+      gender: { label: "Cinsiyet" },
       instagram: { label: "Instagram kullanıcı adın", placeholder: "@kullaniciadi", optional: "isteğe bağlı" },
     },
     kvkk: {
@@ -144,11 +175,15 @@ export const COPY = {
     submit: "Uygun saatleri göster",
     submitting: "Kontrol ediliyor…",
     errors: {
+      firstName: "Adını yaz.",
+      lastName: "Soyadını yaz.",
+      /** Older browser tabs still send one name field. */
       fullName: "Adını ve soyadını yaz.",
       phone: "Geçerli bir cep telefonu yaz (05xx xxx xx xx).",
       email: "Geçerli bir e-posta adresi yaz.",
+      gender: "Cinsiyetini seç.",
       kvkk: "Devam etmek için aydınlatma metnini onaylaman gerekiyor.",
-      generic: "Başvurun gönderilemedi. Bağlantını kontrol edip tekrar dene.",
+      generic: "Bilgilerin gönderilemedi. Bağlantını kontrol edip tekrar dene.",
     },
     notices: {
       already_booked: {
@@ -157,17 +192,18 @@ export const COPY = {
       },
       known_customer: {
         title: "Seni zaten tanıyoruz",
-        text: "Programdaysan destek ekibimize WhatsApp'tan yazman yeterli, hemen yardımcı olalım.",
+        text: "Programdaysan mentörüne WhatsApp'tan yazman yeterli, hemen yardımcı olalım.",
       },
       received: {
-        title: "Başvurun alındı",
-        text: "Ekibimiz başvurunu inceleyip seninle iletişime geçecek.",
+        title: "Bilgilerin bize ulaştı",
+        text: "Ekibimiz seninle iletişime geçecek.",
       },
     },
+    whatsapp: "WhatsApp'tan yaz",
     calendarTitle: (firstName: string) => `Harika ${firstName}, sana uyan saati seç`,
-    calendarLead: "Görüşme 30 dakika, Zoom'dan. Saati seçince bağlantı e-postana gelir.",
+    calendarLead: "Görüşme 30 dakika, Google Meet'ten. Saati seçince bağlantı e-postana gelir.",
     noSlotWhatsappText: (firstName: string) =>
-      `Merhaba, ben ${firstName}. Başvurumu yaptım ama takvimde bana uyan bir saat bulamadım.`,
+      `Merhaba, ben ${firstName}. Formu doldurdum ama takvimde bana uyan bir saat bulamadım.`,
   },
 
   booking: {
@@ -181,12 +217,12 @@ export const COPY = {
   thanks: {
     title: (firstName: string | null) => (firstName ? `Görüşmen planlandı, ${firstName}` : "Görüşmen planlandı"),
     lead: "Onay e-postan Calendly'den gönderildi; görüşmeden önce hatırlatma da gelecek.",
-    fallbackLead: "Görüşme saatin ve Zoom bağlantın Calendly'den e-postana gönderildi.",
+    fallbackLead: "Görüşme saatin ve Google Meet bağlantın Calendly'den e-postana gönderildi.",
     timeInEmail: "Saat bilgisi onay e-postanda",
-    /** Under the date and time; the Zoom link itself is in Calendly's e-mail (and below when already known). */
-    callNote: "Görüşme Zoom'dan. Bağlantı onay e-postanda; saatinde tıklaman yeterli.",
-    channelNote: "Bilgisayardan tarayıcıyla, telefondan Zoom uygulamasıyla katılabilirsin.",
-    join: "Zoom'a katıl",
+    /** Under the date and time; the meeting link itself is in Calendly's e-mail (and below when already known). */
+    callNote: "Görüşme Google Meet'ten. Bağlantı onay e-postanda; saatinde tıklaman yeterli.",
+    channelNote: "Bilgisayardan tarayıcıyla, telefondan Google Meet uygulamasıyla katılabilirsin.",
+    join: "Görüşmeye katıl",
     host: (name: string) => `Görüşmeci: ${name}.`,
     confirm: "WhatsApp'tan onayla",
     /** `when` like "5 Kasım Çarşamba 14:30" (Türkiye time); null when Calendly did not tell us. */
@@ -195,11 +231,13 @@ export const COPY = {
     reschedule: "Saati değiştir",
     cancel: "İptal et",
     videoTitle: "Görüşmeden önce bu kısa videoyu izle",
+    /** Card next to the video: who the student will work with. */
+    mentorCard: "Programda baş mentörün Tarık Buğra Varol.",
     whatsapp: "WhatsApp'tan yaz",
     whatsappText: "Merhaba, görüşme planladım ve bir sorum var.",
     prepTitle: "Görüşmeye hazırlık",
     prep: [
-      "Birkaç dakika önce Zoom bağlantısını aç; sessiz, interneti iyi bir yerde ol.",
+      "Birkaç dakika önce Google Meet bağlantısını aç; sessiz, interneti iyi bir yerde ol.",
       "Mevcut durumunu ve hedefini birkaç cümleyle düşün.",
       "Bütçe ve zaman planını konuşacağız; kafandaki soruları not al.",
       "Görüşmeye karar verici olarak katıl; başkasına danışacaksan o da yanında olsun.",
@@ -212,7 +250,7 @@ export const COPY = {
     quote: "Borçla da başlanır; ben öyle başladım.",
     resourcesTitle: "Buradan başlayabilirsin",
     reapply: (days: number) =>
-      `Bütçen veya zamanlaman değiştiğinde ${days} gün sonra tekrar başvurabilirsin. Kapımız açık.`,
+      `Bütçen veya zamanlaman değiştiğinde ${days} gün sonra formu tekrar doldurabilirsin. Kapımız açık.`,
   },
 
   faq: {
@@ -223,20 +261,24 @@ export const COPY = {
         a: "Evet. 30 dakikalık görüşmede mevcut durumunu ve hedefini konuşuyoruz. Program sana uygunsa detayları anlatıyoruz, değilse ücretsiz kaynaklara yönlendiriyoruz.",
       },
       {
+        q: "Mentörüm kim olacak?",
+        a: "Eğitimi baş mentör Tarık Buğra Varol yönetiyor; bugüne kadar yüzlerce başarılı öğrenci yetiştirdi. Ekibin toplam e-ticaret cirosu 115 milyon TL. Kurucumuz Onur Yeşil de program boyunca öğrencilerin yanında.",
+      },
+      {
         q: "Ücreti ne kadar?",
         a: "Görüşmede, durumuna göre netleştiriyoruz; taksit seçeneği var. Görüşme ücretsiz, satış baskısı yok.",
       },
       {
-        q: "Hiç tecrübem yok, başvurabilir miyim?",
-        a: "Evet. İlk gün sana bir koç atanıyor ve 3 haftalık ödevli eğitimle temeli birlikte atıyoruz. Önemli olan haftada 5–10 saat ayırabilmen ve öğrenmeye açık olman.",
-      },
-      {
-        q: "Borcum var, başlayabilir miyim?",
-        a: "Görüşmede birlikte bakalım. Ben 500 bin lira borçla başladım; önemli olan test bütçesi ve haftada 5–10 saat.",
+        q: "Hiç tecrübem yok, başlayabilir miyim?",
+        a: "Evet. İlk gün sana bir mentör atanıyor ve 3 haftalık ödevli eğitimle temeli birlikte atıyoruz. Önemli olan haftada 5–10 saat ayırabilmen ve öğrenmeye açık olman.",
       },
       {
         q: "Ne kadar bütçe gerekiyor?",
-        a: "Ürün testleri ve reklam için gerçekçi bir başlangıç bütçesi gerekir. Başvuruda bunu sormamızın nedeni sana boşa zaman kaybettirmemek; görüşmede durumuna göre netleştiriyoruz.",
+        a: "Eğitim, ürün testleri ve reklam için gerçekçi bir başlangıç bütçesi gerekir. Formda bunu sormamızın nedeni sana boşa zaman kaybettirmemek; görüşmede durumuna göre netleştiriyoruz.",
+      },
+      {
+        q: "Borcum var, başlayabilir miyim?",
+        a: "Görüşmede birlikte bakalım. Kurucumuz Onur 500 bin lira borçla başladı; önemli olan gerçekçi bir test bütçesi ve haftada 5–10 saat.",
       },
       {
         q: "Stok çekmek pahalı mı?",
@@ -252,15 +294,15 @@ export const COPY = {
       },
       {
         q: "3 ay bitince destek bitiyor mu?",
-        a: "Hayır. Eğitim 3 ay; koç desteği ilk ürünün tutana kadar sürüyor. Discord ve eğitim paneli ömür boyu.",
+        a: "Hayır. Eğitim 3 ay; mentör desteği ilk ürünün tutana kadar sürüyor. Discord ve eğitim paneli ömür boyu.",
       },
       {
-        q: "Koça nasıl ulaşıyorum?",
-        a: "Her gün 09:00–21:00 WhatsApp'tan; gerektiğinde Zoom'da ekran paylaşımlı görüşme.",
+        q: "Mentörüme nasıl ulaşıyorum?",
+        a: "Her gün 09:00–21:00 WhatsApp'tan; gerektiğinde ekran paylaşımlı görüntülü görüşme. Ayrıca haftada 3 canlı yayın var.",
       },
       {
         q: "Görüşme nasıl yapılıyor?",
-        a: "Zoom'dan, 30 dakika. Saati seçince Zoom bağlantısı, onay ve hatırlatma e-postaları Calendly'den gelir; saatini oradaki bağlantıdan tek tıkla değiştirebilirsin.",
+        a: "Google Meet'ten, 30 dakika. Saati seçince bağlantı, onay ve hatırlatma e-postaları Calendly'den gelir; saatini oradaki bağlantıdan tek tıkla değiştirebilirsin.",
       },
       {
         q: "Yurt dışında yaşıyorum, katılabilir miyim?",
@@ -286,7 +328,7 @@ export const COPY = {
       { href: "/cerez", label: "Çerez Politikası" },
     ],
     disclaimer:
-      "Kazanç garantisi vermiyoruz; başarana kadar yanındayız. E-ticaret risk içerir; sonuç ürüne, bütçeye, zamana ve uygulamaya bağlıdır. Kurucunun satış rakamları kendi mağazalarına aittir ve tipik bir sonucu temsil etmez. Bu site Meta Platforms, Inc. veya Shopify Inc. ile bağlantılı değildir ve onlar tarafından onaylanmamıştır.",
+      "Kazanç garantisi vermiyoruz; başarana kadar yanındayız. E-ticaret risk içerir; sonuç ürüne, bütçeye, zamana ve uygulamaya bağlıdır. Ekibin ciro ve satış rakamları kendi mağazalarına aittir, tipik bir sonucu temsil etmez; öğrenci sonuçları kişiden kişiye değişir. Bu site Meta Platforms, Inc. veya Shopify Inc. ile bağlantılı değildir ve onlar tarafından onaylanmamıştır.",
   },
 
   stickyCta: "30 dk ücretsiz görüşme",

@@ -1,5 +1,8 @@
+import closingParcels from "@/content/assets/closing-parcels.jpg";
 import founderAvatar from "@/content/assets/founder-avatar.jpg";
 import founderPortrait from "@/content/assets/founder-portrait.jpg";
+import mentorAvatar from "@/content/assets/mentor-avatar.jpg";
+import mentorPortrait from "@/content/assets/mentor-portrait.jpg";
 
 /**
  * Every video and image slot on the site.
@@ -16,6 +19,9 @@ import founderPortrait from "@/content/assets/founder-portrait.jpg";
  *
  * Founder photos: cropped from brand/source/founder-terrace.jpg (900×1600,
  * WhatsApp-compressed). Replace with a sharper original when it arrives.
+ * Mentor photos: cropped from brand/source/mentor-garden.jpg.
+ * `closing`: a people-free still life generated for the brand (parcels in
+ * champagne light), used dimmed behind the last call to action.
  */
 
 export type VideoSource =
@@ -47,10 +53,18 @@ export const MEDIA = {
   vsl: intro,
   /** "Before your call" video on the thank-you page (the intro until a dedicated one exists). */
   preCall: intro,
+  mentor: {
+    /** 4:5, mentor section. */
+    portrait: { src: mentorPortrait, alt: "Tarık Buğra Varol, Ecom Plus Academy baş mentörü" },
+    /** Square face crop: hero byline, thank-you page. */
+    avatar: { src: mentorAvatar, alt: "Tarık Buğra Varol" },
+  },
   founder: {
     /** 4:5, story section. */
     portrait: { src: founderPortrait, alt: "Onur Yeşil, Ecom Plus Academy kurucusu" },
-    /** Square face crop: hero byline, coach card, thank-you page. */
+    /** Square face crop: mentor section, budget note in the form, /sonuc. */
     avatar: { src: founderAvatar, alt: "Onur Yeşil" },
   },
+  /** 16:9 backdrop of the closing call to action. */
+  closing: { src: closingParcels },
 } as const;

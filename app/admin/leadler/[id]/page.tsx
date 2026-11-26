@@ -6,7 +6,7 @@ import { ActionForm, SubmitButton } from "@/components/admin/action-form";
 import { OutcomeForm } from "@/components/admin/outcome-form";
 import { AdminShell, Card, money, StatusBadge, when } from "@/components/admin/ui";
 import { BOOKING } from "@/config/booking";
-import { QUESTIONS, answerLabel } from "@/config/qualification";
+import { QUESTIONS, answerLabel, budgetAmountLabel, genderLabel } from "@/config/qualification";
 import { WHATSAPP } from "@/content/whatsapp";
 import { requireUser } from "@/lib/auth/session";
 import { calendlyUrl, toE164 } from "@/lib/calendly/link";
@@ -150,10 +150,11 @@ export default async function LeadPage({ params }: PageProps<"/admin/leadler/[id
       name: lead.full_name,
       email: lead.email,
       phone: toE164(lead.phone),
+      instagram: lead.instagram,
       leadId: lead.id,
       utm: { utm_source: "whatsapp", utm_medium: "panel", utm_campaign: touch?.utm_campaign },
     },
-    { phoneAnswer: BOOKING.calendly.phoneAnswer },
+    { phoneAnswer: BOOKING.calendly.phoneAnswer, instagramAnswer: BOOKING.calendly.instagramAnswer },
   );
 
   return (
@@ -303,6 +304,16 @@ export default async function LeadPage({ params }: PageProps<"/admin/leadler/[id
                   <dd>{lead.answers[q.id] ? answerLabel(q.id, lead.answers[q.id]) : "–"}</dd>
                 </div>
               ))}
+              {budgetAmountLabel(lead.answers) && (
+                <div>
+                  <dt className="text-xs text-faint">Tam bütçe</dt>
+                  <dd>{budgetAmountLabel(lead.answers)}</dd>
+                </div>
+              )}
+              <div>
+                <dt className="text-xs text-faint">Cinsiyet</dt>
+                <dd>{genderLabel(lead.answers.gender) ?? "–"}</dd>
+              </div>
             </dl>
             <p className="mt-4 text-xs text-faint">
               {lead.apply_count} başvuru, son: {when(lead.last_applied_at)}

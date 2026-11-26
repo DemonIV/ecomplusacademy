@@ -102,9 +102,13 @@ describe("scheduling link", () => {
     expect(url.searchParams.get("primary_color")).toBe("d8b06f");
   });
 
-  it("also fills a custom phone question when configured", () => {
-    const url = new URL(calendlyUrl(base, { phone: "+905321234567" }, { phoneAnswer: "a2" }));
-    expect(url.searchParams.get("a2")).toBe("+905321234567");
+  it("fills the phone and Instagram questions when configured", () => {
+    const url = new URL(
+      calendlyUrl(base, { phone: "+905321234567", instagram: "ayse.yilmaz" }, { phoneAnswer: "a1", instagramAnswer: "a2" }),
+    );
+    expect(url.searchParams.get("a1")).toBe("+905321234567");
+    expect(url.searchParams.get("a2")).toBe("ayse.yilmaz");
+    expect(new URL(calendlyUrl(base, { phone: "+905321234567" }, { instagramAnswer: "a2" })).search).toBe("");
     const ignored = new URL(calendlyUrl(base, { phone: "+905321234567" }, { phoneAnswer: "x; drop" }));
     expect([...ignored.searchParams.keys()]).toEqual([]);
   });

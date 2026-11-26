@@ -35,7 +35,7 @@ const lead = (overrides: Partial<AirtableLead> = {}): AirtableLead => ({
   tier: "A",
   qualified: true,
   status: "qualified",
-  answers: { stage: "selling", budget: "25_50", readiness: "now", hours: "10_20" },
+  answers: { stage: "selling", budget: "500_1000", readiness: "now", hours: "10_20", gender: "female" },
   last_applied_at: new Date("2026-11-15T10:00:00.000Z"),
   first_touch: { ts: 1, utm_source: "facebook", utm_campaign: "Kasım", utm_term: "Set 1", utm_content: "Video 2" },
   last_touch: null,
@@ -55,9 +55,10 @@ const ctx = (reason: "applied" | "booking" | "outcome" | "retry") => ({ now: NOW
 const NOTE = [
   "Site başvurusu – 15.11.2026",
   "Durum: Satış yapıyorum",
-  "Bütçe (3 ay): ₺25.000 – ₺50.000",
+  "Bütçe (3 ay): 500 – 1.000 dolar",
   "Başlama: Hemen",
   "Haftalık süre: 10 – 20 saat",
+  "Cinsiyet: Kadın",
   `Panel: ${PANEL}`,
 ].join("\n");
 
@@ -126,6 +127,13 @@ describe("site applicants", () => {
       [F.notes]: NOTE,
       [F.lastContact]: "2026-11-16",
     });
+  });
+
+  it("note the exact budget typed after the lowest option", () => {
+    const low = lead({ answers: { stage: "none", budget: "lt500", budget_usd: "450", readiness: "now", hours: "5_10" } });
+    const note = factsFromLead(low, null, ctx("applied")).note;
+    expect(note).toContain("Bütçe (3 ay): 0 – 500 dolar");
+    expect(note).toContain("Tam bütçe: 450 dolar");
   });
 
   it("carry the call once booked", () => {
@@ -280,7 +288,10 @@ describe("Calendly bookings without an application", () => {
       [F.notes]: "Calendly randevusu – Ecom Plus Academy | Ücretsiz Ön Görüşme\nEklemek istediğin bir şey var mı?: Akşamları uygunum.",
       [F.lastContact]: "2026-11-14",
     });
-    expect(factsFromInvitee(invitee({ tracking: null }), event, NOW).channel).toBe("Site (Calendly)");
+    // Without utm_source the event's name tells the channel: the "(Instagram)" link goes out in DMs.
+    const named = (name: string) => factsFromInvitee(invitee({ tracking: null }), { ...event, name }, NOW).channel;
+    expect(named("Ecom Plus Academy | Ücretsiz Ön Görüşme (Instagram)")).toBe("Instagram DM");
+    expect(named("Ecom Plus Academy | Ücretsiz Ön Görüşme (Onur)")).toBe("Site (Calendly)");
   });
 
   it("update the team's DM row: stage, call and missing contact details, not the notes", () => {

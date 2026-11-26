@@ -20,13 +20,17 @@ export type CalendlyPrefill = {
   email?: string | null;
   /** E.164, e.g. +905321234567. */
   phone?: string | null;
+  /** Handle without "@". */
+  instagram?: string | null;
   leadId?: string | null;
   utm?: Partial<Record<UtmKey, string | null | undefined>>;
 };
 
 export type CalendlyLinkOptions = {
-  /** Custom question that should also receive the phone number. */
+  /** Custom question ("a1" = first) that receives the phone number. */
   phoneAnswer?: string | null;
+  /** Custom question that receives the Instagram handle. */
+  instagramAnswer?: string | null;
   /** Inline embed: the host page's domain plus optional colours (hex, no #). */
   embed?: { domain: string; colors?: { background: string; text: string; primary: string } };
 };
@@ -60,10 +64,13 @@ export function calendlyUrl(base: string, prefill: CalendlyPrefill, options: Cal
   }
   add("name", prefill.name, 120);
   add("email", prefill.email, 160);
-  // The call happens on Zoom (Calendly creates the meeting), so the phone only goes to a custom question, if any.
-  if (prefill.phone && options.phoneAnswer && /^a([1-9]|10)$/.test(options.phoneAnswer)) {
-    add(options.phoneAnswer, prefill.phone, 20);
-  }
+  // Custom questions are filled by position (a1…a10). The call happens on Google Meet,
+  // so the phone only goes to a question, never to the location.
+  const answer = (key: string | null | undefined, value: string | null | undefined, max: number) => {
+    if (key && /^a([1-9]|10)$/.test(key)) add(key, value, max);
+  };
+  answer(options.phoneAnswer, prefill.phone, 20);
+  answer(options.instagramAnswer, prefill.instagram, 30);
   for (const key of UTM_KEYS) add(key, prefill.utm?.[key]);
   add("salesforce_uuid", prefill.leadId, 64);
 

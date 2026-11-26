@@ -23,11 +23,13 @@ export function Footer() {
                   {BRAND.contact.email}
                 </a>
               </li>
-              <li>
-                <a className="hover:text-paper" href={whatsappLink(BRAND.contact.whatsapp)} rel="noopener" target="_blank">
-                  WhatsApp {formatPhone(BRAND.contact.whatsapp)}
-                </a>
-              </li>
+              {BRAND.contact.whatsapp && (
+                <li>
+                  <a className="hover:text-paper" href={whatsappLink(BRAND.contact.whatsapp)} rel="noopener" target="_blank">
+                    WhatsApp {formatPhone(BRAND.contact.whatsapp)}
+                  </a>
+                </li>
+              )}
               <li>
                 <a className="hover:text-paper" href={BRAND.social.instagram} rel="noopener" target="_blank">
                   Instagram
@@ -51,7 +53,10 @@ export function Footer() {
         <div className="hairline my-10" />
         <p className="max-w-[70ch] text-sm leading-relaxed text-faint">{footer.disclaimer}</p>
         <p className="mt-6 text-sm text-faint">
-          © {SITE.copyrightYear} {BRAND.legalName} · {BRAND.contact.address} · MERSİS: {BRAND.contact.mersis}
+          © {SITE.copyrightYear}{" "}
+          {BRAND.legalReady
+            ? `${BRAND.legalName} · ${BRAND.contact.address} · MERSİS: ${BRAND.contact.mersis}`
+            : BRAND.name}
         </p>
       </div>
     </footer>

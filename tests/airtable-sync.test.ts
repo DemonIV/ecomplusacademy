@@ -146,7 +146,7 @@ describe("site applicants", () => {
       tier: "B",
       qualified: true,
       status: "qualified",
-      answers: { budget: "25_50" },
+      answers: { budget: "500_1000" },
       last_applied_at: NOW,
       first_touch: null,
       last_touch: null,
