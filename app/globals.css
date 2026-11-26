@@ -327,6 +327,74 @@
       0 0 0 1px var(--line-strong);
   }
 
+  /* ── Resource covers (/kaynaklar): text posts, like an Instagram grid ──── */
+  /* Sizes inside use cqi (1% of the cover's width), so one cover fits a phone tile and a page hero. */
+  .cover {
+    container-type: inline-size;
+    position: relative;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+    border-radius: 12px;
+    border: 1px solid var(--line);
+    isolation: isolate;
+    transition: border-color 160ms ease;
+  }
+  .cover-gold {
+    background:
+      radial-gradient(85% 65% at 72% 18%, rgb(216 176 111 / 0.34), transparent 70%),
+      linear-gradient(160deg, #1c1710, var(--deep) 72%);
+  }
+  .cover-silver {
+    background:
+      radial-gradient(85% 65% at 24% 14%, rgb(214 208 203 / 0.2), transparent 70%),
+      linear-gradient(160deg, #18181b, var(--deep) 72%);
+  }
+  .cover-kraft {
+    background:
+      radial-gradient(85% 65% at 76% 86%, rgb(201 154 98 / 0.3), transparent 70%),
+      linear-gradient(200deg, #1b150f, var(--deep) 72%);
+  }
+  /* The pinned "Bana uygun mu?" tile: the same metal as the primary button. */
+  .cover-pinned {
+    background: linear-gradient(160deg, #e7c68e, var(--gold) 55%, #b98f4f);
+    border-color: transparent;
+    color: #1d1404;
+  }
+  .cover-kind {
+    position: absolute;
+    top: 7cqi;
+    left: 7cqi;
+    /* A long kind ("Kontrol listesi") wraps onto a second line on phone tiles instead of being cut. */
+    max-width: calc(100% - 14cqi);
+    font-size: max(0.625rem, 5.5cqi);
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .cover-word {
+    /* The block padding keeps the dots of Ü and İ inside the clipped gradient. */
+    padding: 0.14em 7cqi 0.06em;
+    font-family: var(--font-display);
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: -0.04em;
+    text-align: center;
+    overflow-wrap: anywhere;
+    background-image: linear-gradient(180deg, var(--paper), var(--silver) 70%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .cover-gold .cover-word {
+    background-image: linear-gradient(180deg, #f1d6a3, var(--gold) 60%, var(--gold-deep));
+  }
+  .cover-kraft .cover-word {
+    background-image: linear-gradient(180deg, #e7c49a, var(--kraft) 65%, #9c7341);
+  }
+
   /* ── Misc ───────────────────────────────────────────────────────────────── */
   .hairline {
     height: 1px;
