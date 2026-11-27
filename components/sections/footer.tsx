@@ -14,6 +14,9 @@ export function Footer() {
           <div>
             <Logo variant="stacked" className="w-40" />
             <p className="mt-5 max-w-sm text-muted">{BRAND.tagline}</p>
+            <Link className="mt-4 inline-block font-semibold text-gold hover:text-paper" href="/kaynaklar">
+              {footer.resources} →
+            </Link>
           </div>
           <div>
             <p className="font-semibold">İletişim</p>
