@@ -10,6 +10,7 @@ import {
   touchFromUrl,
   trackingAllowed,
 } from "@/lib/attribution";
+import { canonicalResourcesPath } from "@/lib/resources";
 
 /**
  * First-touch attribution on landing requests. Writes Meta's `_fbc`/`_fbp`
@@ -19,6 +20,14 @@ import {
  * sessionStorage and `/api/consent` writes these cookies when accepted.
  */
 export function proxy(request: NextRequest) {
+  // Any spelling of the resources address (/Kaynaklar, /kaynak…) lands on /kaynaklar, query kept for attribution.
+  const resourcesPath = canonicalResourcesPath(request.nextUrl.pathname);
+  if (resourcesPath) {
+    const url = request.nextUrl.clone();
+    url.pathname = resourcesPath;
+    return NextResponse.redirect(url, 308);
+  }
+
   const response = NextResponse.next();
   if (!trackingAllowed(request.cookies.get(COOKIE.consent)?.value)) return response;
 

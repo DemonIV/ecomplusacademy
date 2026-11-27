@@ -322,6 +322,8 @@ export const COPY = {
   },
 
   footer: {
+    /** The only link to /kaynaklar on the site: at the very bottom, below the form, so the funnel stays as it is. */
+    resources: "Ücretsiz kaynaklar",
     legal: [
       { href: "/kvkk", label: "KVKK Aydınlatma Metni" },
       { href: "/gizlilik", label: "Gizlilik Politikası" },

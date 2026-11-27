@@ -30,6 +30,20 @@ function words(resource: ResourceCard): string[] {
   return [resource.slug, resource.keyword, ...(resource.aliases ?? [])].map(normalizeKeyword).filter(Boolean);
 }
 
+/**
+ * The address is typed from a video or a bio and phones often capitalise it:
+ * "/Kaynaklar", "/KAYNAK/urun" and the like return the right address
+ * ("/kaynaklar", "/kaynaklar/urun"); null when it is already right or is not
+ * a resources address. Done in proxy.ts: Next.js matches next.config
+ * redirects case-insensitively, so a "/Kaynaklar" rule would also catch
+ * "/kaynaklar" and loop.
+ */
+export function canonicalResourcesPath(pathname: string): string | null {
+  const match = /^\/kaynak(?:lar)?(?=\/|$)/i.exec(pathname);
+  if (!match || match[0] === "/kaynaklar") return null;
+  return `/kaynaklar${pathname.slice(match[0].length)}`;
+}
+
 /** Newest first. */
 export function sortedResources<T extends ResourceCard>(list: readonly T[]): T[] {
   return [...list].sort((a, b) => b.date.localeCompare(a.date));

@@ -1,6 +1,13 @@
 import { describe, expect, it } from "vitest";
 import { RESOURCES, type Resource } from "@/content/resources";
-import { findResource, normalizeKeyword, relatedResources, searchResources, sortedResources } from "@/lib/resources";
+import {
+  canonicalResourcesPath,
+  findResource,
+  normalizeKeyword,
+  relatedResources,
+  searchResources,
+  sortedResources,
+} from "@/lib/resources";
 
 const make = (slug: string, keyword: string, date: string, extra: Partial<Resource> = {}): Resource => ({
   slug,
@@ -68,6 +75,25 @@ describe("searchResources", () => {
 
   it("finds nothing for an unknown word", () => {
     expect(searchResources("kargo", LIST)).toEqual({ exact: null, matches: [] });
+  });
+});
+
+describe("canonicalResourcesPath", () => {
+  it("sends every spelling of the address to /kaynaklar, keeping the rest of the path", () => {
+    expect(canonicalResourcesPath("/Kaynaklar")).toBe("/kaynaklar");
+    expect(canonicalResourcesPath("/KAYNAKLAR")).toBe("/kaynaklar");
+    expect(canonicalResourcesPath("/kaynak")).toBe("/kaynaklar");
+    expect(canonicalResourcesPath("/Kaynak")).toBe("/kaynaklar");
+    expect(canonicalResourcesPath("/Kaynaklar/urun")).toBe("/kaynaklar/urun");
+    expect(canonicalResourcesPath("/KAYNAK/ÜRÜN")).toBe("/kaynaklar/ÜRÜN");
+  });
+
+  it("never redirects the right address (that would loop) or other pages", () => {
+    expect(canonicalResourcesPath("/kaynaklar")).toBeNull();
+    expect(canonicalResourcesPath("/kaynaklar/urun")).toBeNull();
+    expect(canonicalResourcesPath("/")).toBeNull();
+    expect(canonicalResourcesPath("/kaynaklarim")).toBeNull();
+    expect(canonicalResourcesPath("/kvkk")).toBeNull();
   });
 });
 
